@@ -128,14 +128,14 @@ def main():
 
         # GET FLOPS
         flops_c = scpobaf_flops(
-            n_diag_blocks=parameters['parameters']['n_t'],
+            n_diagonals=parameters['parameters']['n_t'],
             n_offdiags=parameters['parameters']['n_offdiags'],
             arrowhead_blocksize=parameters['parameters']['arrowhead_blocksize'],
         )
         print(flops_c, end=',')
 
         flops_si = scpobasi_flops(
-            n_diag_blocks=parameters['parameters']['n_t'],
+            n_diagonals=parameters['parameters']['n_t'],
             n_offdiags=parameters['parameters']['n_offdiags'],
             arrowhead_blocksize=parameters['parameters']['arrowhead_blocksize'],
         )

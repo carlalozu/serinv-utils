@@ -2,9 +2,9 @@ import numpy as np
 import time
 
 from serinv.algs.work_in_progress.scpobbaf import scpobbaf_c
-from storage.utils_bba import dd_bba, bba_arrays_to_dense, bba_dense_to_arrays
-from storage.parameters import calculate_parameters_n_diagonal
-from flops.scpobbaf_flops import scpobbaf_flops
+from ..storage.utils_bba import dd_bba, bba_arrays_to_dense, bba_dense_to_arrays
+from ..storage.parameters import calculate_parameters_n_diagonal
+from ..flops.scpobbaf_flops import scpobbaf_flops
 
 import argparse
 

@@ -2,9 +2,9 @@ import numpy as np
 import time
 
 from serinv.algs.work_in_progress.scpobaf import scpobaf
-from storage.utils_ba import dd_ba, ba_arrays_to_dense, ba_dense_to_arrays
-from storage.parameters import calculate_parameters_banded
-from flops.flops import scpobaf_flops
+from ..storage.utils_ba import dd_ba, ba_arrays_to_dense, ba_dense_to_arrays
+from ..storage.parameters import calculate_parameters_banded
+from ..flops.scpobaf_flops import scpobaf_flops
 
 import argparse
 
@@ -151,7 +151,7 @@ def main():
 
         # GET FLOPS
         flops = scpobaf_flops(
-            n_diag_blocks=parameters['parameters']['n_t'],
+            n_diagonals=parameters['parameters']['n_t'],
             n_offdiags=parameters['parameters']['n_offdiags'],
             arrowhead_blocksize=parameters['parameters']['arrowhead_blocksize'],
         )
