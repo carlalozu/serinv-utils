@@ -43,4 +43,4 @@ def scpobaf_flops(n_diagonals, n_offdiags, arrowhead_blocksize):
     # L_{ndb+1, ndb+1} = chol(A_{ndb+1, ndb+1})
     FLOPS += 1/3*arrowhead_blocksize**3 + 1/2*arrowhead_blocksize**2 + 1/6*arrowhead_blocksize  # cholesky
 
-    return FLOPS
+    return int(FLOPS)

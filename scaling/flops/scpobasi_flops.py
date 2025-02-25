@@ -77,4 +77,4 @@ def scpobasi_flops(n_diagonals, n_offdiags, arrowhead_blocksize):
         counts['element_scaling'] += 1
         FLOPS += 1
 
-    return FLOPS
+    return int(FLOPS)

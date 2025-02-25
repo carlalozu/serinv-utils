@@ -65,4 +65,4 @@ def scpobbaf_flops(n_diag_blocks, diagonal_blocksize, arrowhead_blocksize, n_off
         2 + arrowhead_blocksize/6  # cholesky nb
     counts['cholesky_nb'] += 1
 
-    return FLOPS
+    return int(FLOPS)

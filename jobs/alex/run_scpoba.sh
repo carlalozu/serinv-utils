@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=scpobaf      # Job name   
-#SBATCH --output=scpobaf-%j.out # Output file
-#SBATCH --error=scpobaf-%j.err  # Error file 
+#SBATCH --job-name=scpobasi      # Job name   
+#SBATCH --output=outputs/scpobasi-%j.out # Output file
+#SBATCH --error=outputs/scpobasi-%j.err  # Error file 
 #SBATCH --ntasks=1               # Number of tasks
 #SBATCH --cpus-per-task=16       # Number of CPUs per task
 #SBATCH --gres=gpu:a40:1         # Number of GPUs
@@ -17,9 +17,9 @@
 # conda activate serinv_env
 
 # Parameters
-arrowhead_blocksize=$((128))
-output_file="scpobaf_$arrowhead_blocksize.txt"
-script="scaling_scpobaf.py"
+arrowhead_blocksize=$((64))
+output_file="scpobasi_$arrowhead_blocksize.txt"
+script="scaling_scpobasi.py"
 
 # Create output files
 > results/$output_file
@@ -41,6 +41,6 @@ for ((j=i-7; j<i-2; j++)) do
     echo "Running $script with matrix size $n, bandwidth $bandwidth, j $j, diagonal_blocksize $diagonal_blocksize"
     for ((r=0; r<n_runs; r++)) do
         echo -n "$r,$j," | tee -a results/$output_file
-        python ../../dev/$script --n=$n --bandwidth=$bandwidth --arrowhead_blocksize=$arrowhead_blocksize --numpy_compare=$numpy_compare --overwrite=$overwrite| tee -a results/$output_file
+        python ../../scaling/$script --n=$n --bandwidth=$bandwidth --arrowhead_blocksize=$arrowhead_blocksize --numpy_compare=$numpy_compare --overwrite=$overwrite| tee -a results/$output_file
     done
 done
