@@ -19,25 +19,22 @@ def main(filename, filename_ref, imgname):
     data_pobtaf = pd.read_csv(filename_ref)
 
     plt.figure(figsize=(8, 6))
-    for i in data_scpobbaf['id'].unique()[::-1]:
+    for i in sorted(data_scpobbaf['id'].unique())[::-1]:
         data = data_scpobbaf[data_scpobbaf['id']==i]
-        time_ref = data_pobtaf[data_pobtaf['id']==i]['time'].mean()
+        time_ref = data_pobtaf[data_pobtaf['id']==i][f'pobta{alg}_time'].median()
 
         bandwidth = list(data['bandwidth'])[0]
         arrowhead = list(data['arrowhead_blocksize'])[0]
-        matrix_size = list(data['n'])[0] - arrowhead
+        matrix_size = list(data['n'])[0]
 
-        grouped_data = data.groupby('diagonal_blocksize').agg({
-            'time': 'mean',
-            'numpy_time': 'mean',
-        }).reset_index()
+        grouped_data = data.groupby('diagonal_blocksize').median().reset_index()
         # Scaling
-        grouped_data['time'] = time_ref/grouped_data['time']
+        grouped_data[f'scpobba{alg}_speedup'] = time_ref/grouped_data[f'scpobba{alg}_time']
 
         # Plot mean times with error bars
         plt.errorbar(
             grouped_data['diagonal_blocksize'], 
-            grouped_data['time'], 
+            grouped_data[f'scpobba{alg}_speedup'], 
             label=f'$b$={int(bandwidth)}',
             marker='o',
             linestyle='-',
@@ -71,7 +68,7 @@ if __name__ == "__main__":
             # f=cholesky, si=selected inversion
             for arrow in [64]: #, 128]: #, 512]:
         
-                filename = f"../jobs/{cluster}/results/scpobba{alg}_blocks_{arrow}.txt"
-                filename_ref = f'../jobs/{cluster}/results/pobta{alg}_{arrow}.txt'
-                imgname = f"../jobs/{cluster}/images/scpobba{alg}_blocks_{arrow}_speedup.pdf"
+                filename = f"../../jobs/{cluster}/results/scpobbasi_blocks_{arrow}.txt"
+                filename_ref = f'../../jobs/{cluster}/results/pobtasi_{arrow}.txt'
+                imgname = f"../../jobs/{cluster}/images/scpobba{alg}_blocks_{arrow}_speedup.pdf"
                 main(filename, filename_ref, imgname)

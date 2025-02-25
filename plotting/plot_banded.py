@@ -25,16 +25,16 @@ def main(filename, filename_ref, imgname, alg='f', cluster='fritz'):
     # Plot mean times with error bars
     ax1.errorbar(
         grouped_data.index, 
-        grouped_data['time'], 
-        yerr=data_.groupby('n_offdiags')['time'].std(),
+        grouped_data[f'scpoba{alg}_time'],
+        yerr=data_.groupby('n_offdiags')[f'scpoba{alg}_time'].std(),
         label=f'poba{alg}',
     )
 
     # Plot ref times with error bars
     ax1.errorbar(
         grouped_data_ref.index, 
-        grouped_data_ref['time'], 
-        yerr=data_ref_.groupby('diagonal_blocksize')['time'].std(),
+        grouped_data_ref[f'scpoba{alg}_time'],
+        yerr=data_ref_.groupby('diagonal_blocksize')[f'scpoba{alg}_time'].std(),
         label=f'pobta{alg}',
     )
 
@@ -42,7 +42,7 @@ def main(filename, filename_ref, imgname, alg='f', cluster='fritz'):
     # Plot mean times with error bars
     ax2.plot(
         grouped_data.index, 
-        grouped_data['FLOPS']*(1e-9)/grouped_data['time'], 
+        grouped_data['FLOPS']*(1e-9)/grouped_data[f'time_scpoba{alg}'], 
         label=f'poba{alg}',
         linestyle = '--',
     )
@@ -50,7 +50,7 @@ def main(filename, filename_ref, imgname, alg='f', cluster='fritz'):
     # Plot ref times with error bars
     ax2.plot(
         grouped_data_ref.index, 
-        grouped_data_ref['FLOPS']*(1e-9)/grouped_data_ref['time'], 
+        grouped_data_ref['FLOPS']*(1e-9)/grouped_data_ref[f'time_scpoba{alg}'], 
         label=f'pobta{alg}',
         linestyle = '--',
     )
@@ -98,7 +98,7 @@ if __name__ == "__main__":
         for alg in ['f','si']: # goes with diagonal_blocksize
             # alg = 'scpobasi' # goes with n_offdiags
 
-            filename = f"../jobs/{cluster}/results/scpoba{alg}_{arrowhead}.txt"
-            filename_ref = f"../jobs/{cluster}/results/pobta{alg}_{arrowhead}.txt"
-            imgname = f"../jobs/{cluster}/images/scpoba{alg}_{arrowhead}.pdf"
+            filename = f"../../jobs/{cluster}/results/scpobasi_{arrowhead}.txt"
+            filename_ref = f"../../jobs/{cluster}/results/pobtasi_{arrowhead}.txt"
+            imgname = f"../../jobs/{cluster}/images/scpobasi_{arrowhead}.pdf"
             main(filename, filename_ref, imgname, alg, cluster)

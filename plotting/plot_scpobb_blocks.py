@@ -13,7 +13,7 @@ plt.rcParams.update({
     'lines.linewidth': 3,
 })
 
-def main(filename, imgname, type, cluster):
+def main(filename, imgname, alg, type, cluster):
     data_ = pd.read_csv(filename)
 
     plt.figure(figsize=(8, 6))
@@ -24,7 +24,7 @@ def main(filename, imgname, type, cluster):
         arrowhead = int(list(data['arrowhead_blocksize'])[0])
         matrix_size = int(list(data['n'])[0])
 
-        grouped_data = data.groupby('diagonal_blocksize').mean()
+        grouped_data = data.groupby('diagonal_blocksize').median()
 
 
         label = f'$b$: {int(bandwidth)}'
@@ -33,7 +33,7 @@ def main(filename, imgname, type, cluster):
         if type=='runtime':
             plt.plot(
                 grouped_data.index, 
-                grouped_data['time'], 
+                grouped_data[f'scpobba{alg}_time'], 
                 # yerr=data.groupby('diagonal_blocksize')['time'].std(),
                 label=label,
                 marker='o',
@@ -43,7 +43,7 @@ def main(filename, imgname, type, cluster):
         else:
             plt.plot(
                 grouped_data.index, 
-                grouped_data['FLOPS']/grouped_data['time']*1e-9, 
+                grouped_data[f'scpobba{alg}_FLOPS']/grouped_data[f'scpobba{alg}_time']*1e-9, 
                 label=label,
                 marker='o',
                 linestyle='-',
@@ -90,7 +90,7 @@ if __name__ == "__main__":
             # f=cholesky, si=selected inversion
             for arrow in [64]: #, 128]:
                 for type in ['runtime', 'performance']:
-                    filename = f"../jobs/{cluster}/results/scpobba{alg}_blocks_{arrow}.txt"
-                    imgname = f"../jobs/{cluster}/images/scpobba{alg}_blocks_{arrow}_{type}.pdf"
+                    filename = f"../../jobs/{cluster}/results/scpobbasi_blocks_{arrow}.txt"
+                    imgname = f"../../jobs/{cluster}/images/scpobba{alg}_blocks_{arrow}_{type}.pdf"
 
-                    main(filename, imgname, type, cluster)
+                    main(filename, imgname, alg, type, cluster)
