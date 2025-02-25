@@ -12,25 +12,28 @@
 
 # Open venv
 # conda activate serinv_cpu
+arrowhead_blocksize=$((64))
+
+output_file="pobtasi_$arrowhead_blocksize.txt"
+script="scaling_pobtasi.py"
 
 # Create output file
-> results/pobtasi_128.txt
+> results/$output_file
 
-echo "run,id,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time,numpy_time,error" | tee -a results/pobtasi_128.txt
+echo "run,id,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,pobtaf_time,pobtasi_time,pobtaf_FLOPS,pobtasi_FLOPS"  | tee -a results/$output_file
 
-for ((j=9; j<13; j++)) do
+for ((j=i-7; j<i-2; j++)) do
 
     i=16
     inside_n=$((2**i))
     bandwidth=$((2**j+1)) # must be odd
-    arrowhead_blocksize=$((128))
     n=$((inside_n+arrowhead_blocksize)) # total matrix size
 
     n_runs=6
     
-    echo "Running pobtaf with matrix size $n, bandwidth $bandwidth, j $j, arrowhead_blocksize $arrowhead_blocksize"
+    echo "Running $script with matrix size $n, bandwidth $bandwidth, j $j, diagonal_blocksize $diagonal_blocksize"
     for ((r=0; r<n_runs; r++)) do
-        echo -n "$r,$j," | tee -a results/pobtasi_128.txt
-        python ../dev/scaling_pobtasi.py --n=$n --bandwidth=$bandwidth --arrowhead_blocksize=$arrowhead_blocksize |  tee -a results/pobtasi_128.txt
+        echo -n "$r,$j," | tee -a results/$output_file
+        python ../../serinv_utils/$script --n=$n --bandwidth=$bandwidth --arrowhead_blocksize=$arrowhead_blocksize | tee -a results/$output_file
     done
 done

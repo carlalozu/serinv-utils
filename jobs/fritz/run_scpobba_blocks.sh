@@ -16,21 +16,21 @@
 # conda activate serinv_cpu
 
 # Parameters
-script="scaling_scpobbaf.py"
-output_file=scpobbaf_blocks_64.txt
+script="scaling_scpobbasi.py"
+output_file=scpobbasi_blocks_64.txt
 
 # Create output files
 > results/$output_file
 
-echo "run,id,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time,numpy_time,error,FLOPS"  | tee -a results/$output_file
+echo "run,id,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,scpobbaf_time,scpobbasi_time,scpobbaf_FLOPS,scpobbasi_FLOPS"  | tee -a results/$output_file
 
 i=16
 inside_n=$((2**i))
 
-for ((j=i-7; j<i-3; j++)) do
+for ((j=i-7; j<i-2; j++)) do
 
-    bandwidth=$((2**j+1)) # must be odd
     arrowhead_blocksize=64
+    bandwidth=$((2**j+1)) # must be odd
     n=$((inside_n+arrowhead_blocksize)) # total matrix size
 
     numpy_compare=0

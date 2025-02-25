@@ -30,7 +30,7 @@ i=16
 inside_n=$((2**i))
 n=$((inside_n+arrowhead_blocksize)) # total matrix size
 
-for ((j=i-6; j<i-2; j++)) do
+for ((j=i-7; j<i-2; j++)) do
 
     bandwidth=$((2**j+1)) # must be odd
     n_offdiags_blk=1
