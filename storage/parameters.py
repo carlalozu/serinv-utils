@@ -1,4 +1,4 @@
-def calculate_parameters_banded(bandwidth: int, matrix_size: int, arrowhead_width: int):
+def calculate_parameters_banded(matrix_size: int, bandwidth: int, arrowhead_width: int):
 
     parameters = {
         "matrix_size": matrix_size,
@@ -39,7 +39,7 @@ def calculate_parameters_banded(bandwidth: int, matrix_size: int, arrowhead_widt
         }
 
 
-def calculate_parameters_tri_diagonal(bandwidth: int, matrix_size: int, arrowhead_width: int):
+def calculate_parameters_tri_diagonal(matrix_size: int, bandwidth: int, arrowhead_width: int):
 
     parameters = {
         "matrix_size": matrix_size,
@@ -87,7 +87,7 @@ def calculate_parameters_tri_diagonal(bandwidth: int, matrix_size: int, arrowhea
         }
 
 
-def calculate_parameters_n_diagonal(bandwidth: int, matrix_size: int, arrowhead_width: int, n_offdiags_: int = 1):
+def calculate_parameters_n_diagonal(matrix_size: int, bandwidth: int, arrowhead_width: int, n_offdiags_: int = 1):
 
     parameters = {
         "matrix_size": matrix_size,

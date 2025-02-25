@@ -17,8 +17,19 @@ Where the following parameters are defined:
 """
 import numpy as np
 from numpy.typing import ArrayLike
+
 SEED = 63
 
+try:
+    import cupy as cp
+
+    CUPY_AVAIL = True
+    cp.random.seed(cp.uint64(SEED))
+
+except ImportError:
+    CUPY_AVAIL = False
+
+xp = cp if CUPY_AVAIL else np
 
 def dd_ba(
     n_offdiags: int,
@@ -30,14 +41,13 @@ def dd_ba(
     """Returns a random, diagonaly dominant general, banded arrowhead matrix in
     compressed format."""
 
-    xp = np
     rc = (1.0 + 1.0j) if dtype == np.complex128 else 1.0
     n -= arrowhead_size
 
     # Declare variables
     A_diagonal = xp.zeros(n, dtype=dtype)
-    A_lower_diagonals = xp.zeros((n-1, n_offdiags), dtype=dtype,)
-    A_arrow_bottom = xp.zeros((n, arrowhead_size), dtype=dtype)
+    A_lower_diagonals = xp.zeros((n_offdiags, n-1), dtype=dtype)
+    A_arrow_bottom = xp.zeros((arrowhead_size, n), dtype=dtype)
     A_arrow_tip = xp.zeros((arrowhead_size, arrowhead_size), dtype=dtype)
 
     # Fill with random values
@@ -49,11 +59,11 @@ def dd_ba(
 
     # Make diagonally dominant
     for i in range(n):
-        A_diagonal[i] = (1 + xp.sum(A_arrow_bottom[i, :]))*factor
+        A_diagonal[i] = (1 + xp.sum(A_arrow_bottom[:, i]))*factor
     A_diagonal[:] = (A_diagonal[:] + A_diagonal[:].conj())/2
 
     for i in range(arrowhead_size):
-        A_arrow_tip[i, i] = (1 + xp.sum(A_arrow_tip[:, i]))*factor
+        A_arrow_tip[i, i] = (1 + xp.sum(A_arrow_bottom[:, i]))*factor
 
     # Remove extra info
     A_lower_diagonals[-n_offdiags:, -n_offdiags:] = np.fliplr(
@@ -86,12 +96,12 @@ def ba_dense_to_arrays(
 
     # Initialize compressed storage arrays
     M_diagonal = np.zeros(n, dtype=M.dtype)
-    M_lower_diagonals = np.zeros((n-1, n_offdiags), dtype=M.dtype)
-    M_arrow_bottom = np.zeros((n, arrowhead_size), dtype=M.dtype)
+    M_lower_diagonals = np.zeros((n_offdiags, n-1), dtype=M.dtype)
+    M_arrow_bottom = np.zeros((arrowhead_size, n), dtype=M.dtype)
     M_arrow_tip = np.zeros((arrowhead_size, arrowhead_size), dtype=M.dtype)
 
     # Retrieve info for arrowhead
-    M_arrow_bottom[:, :] = M[-arrowhead_size:, :-arrowhead_size].T
+    M_arrow_bottom[:, :] = M[-arrowhead_size:, :-arrowhead_size]
     M_arrow_tip[:, :] = np.tril(M[-arrowhead_size:, -arrowhead_size:])
 
     # Compress the banded portion
@@ -99,7 +109,7 @@ def ba_dense_to_arrays(
         M_diagonal[i] = M[i, i]
 
         j = min(n_offdiags, n-i-1)
-        M_lower_diagonals[i, :j] = M[i+1:i+j+1, i]
+        M_lower_diagonals[:j, i] = M[i+1:i+j+1, i]
 
     M_diagonal[n-1] = M[n-1, n-1]
 
@@ -120,25 +130,25 @@ def ba_arrays_to_dense(
     Create dense n-banded arrowhead matrix based on compressed data format.
     """
     # Arrow height, Total matrix dimension (N = a + n)
-    n_offdiags = M_lower_diagonals.shape[1]
-    n_inner = M_diagonal.shape[0]
+    n_offdiags = M_lower_diagonals.shape[0]
+    n = M_diagonal.shape[0]
     arrowhead_size = M_arrow_tip.shape[0]
-    N = n_inner + arrowhead_size
+    N = n + arrowhead_size
 
     # Initialize output matrix
     M = np.zeros((N, N), dtype=M_diagonal.dtype)
 
     # Reinsert bandwidth portion
-    for i in range(n_inner-1):
+    for i in range(n-1):
         M[i, i] = M_diagonal[i]
 
-        j = min(n_offdiags, n_inner-i-1)
-        M[i+1:i+j+1, i] = M_lower_diagonals[i, :j]
+        j = min(n_offdiags, n-i-1)
+        M[i+1:i+j+1, i] = M_lower_diagonals[:j, i]
 
-    M[n_inner-1, n_inner-1] = M_diagonal[n_inner-1]
+    M[n-1, n-1] = M_diagonal[n-1]
 
     # Reinsert arrow dense matrix
-    M[-arrowhead_size:, :-arrowhead_size] = M_arrow_bottom[:, :].T
+    M[-arrowhead_size:, :-arrowhead_size] = M_arrow_bottom[:, :]
     M[-arrowhead_size:, -arrowhead_size:] = M_arrow_tip[:, :]
 
     # Symmetrize
