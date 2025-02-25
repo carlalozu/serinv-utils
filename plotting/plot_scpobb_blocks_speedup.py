@@ -63,6 +63,7 @@ def main(filename, filename_ref, imgname):
     plt.savefig(imgname, dpi=300)
 
 if __name__ == "__main__":
+
     for cluster in ['fritz', 'alex']:
         for alg in ['f', 'si']:
             # f=cholesky, si=selected inversion

@@ -64,33 +64,40 @@ operations = {
         },
 }
 
-operations_block_chol = [
-    'cholesky_ns3',
+operations_list = {
+"block_chol" : [
+    'dgemm_ns3',
+    'dgemm_ns2nb',
+    'dgemm_nb2ns',
     'triang_solve_ns3',
     'triang_solve_ns2nb',
+    'cholesky_ns3',
+],
+"block_inv" : [
     'dgemm_ns3',
     'dgemm_ns2nb',
     'dgemm_nb2ns',
-]
-
-operations_block_chol_inv = [
     'triang_solve_ns3',
+],
+"banded_chol" : [
     'dgemm_ns3',
-    'dgemm_ns2nb',
-    'dgemm_nb2ns',
-]
-
-operations_banded_chol = [
     'scale_ns',
     'dot_prod_ns',
     'matrix_vector_nsns',
     'matrix_vector_nsnb',
     'cholesky_ns3',
-    'dgemm_ns3'
+],
+"banded_inv" : [
+    'dgemm_ns3',
+    'scale_ns',
+    'dot_prod_ns',
+    'matrix_vector_nsns',
+    'matrix_vector_nsnb',
+    'cholesky_ns3',
 ]
+}
 
-operations_list = operations_block_chol_inv
-def main(filename, imgname, type, cluster):
+def main(filename, imgname, type, routine, cluster):
     data = pd.read_csv(filename)
 
     data_g = data.groupby('diag_blocksize').mean()
@@ -98,7 +105,7 @@ def main(filename, imgname, type, cluster):
     plt.figure(figsize=(8, 6))
 
     if type=='runtime':
-        for alg_ in operations_list:
+        for alg_ in operations_list[routine]:
             plt.plot(
                 data_g.index,
                 data_g[alg_]/data_g['repetitions'],
@@ -109,7 +116,7 @@ def main(filename, imgname, type, cluster):
         plt.ylabel('Runtime (secs)')
 
     if type=='performance':
-        for alg_ in operations_list:
+        for alg_ in operations_list[routine]:
             flops = np.array([operations[alg_]['flops'](ns, 64) for ns in data_g.index])
             plt.plot(
                 data_g.index,
@@ -150,7 +157,7 @@ if __name__ == "__main__":
 
     for cluster in ['alex', 'fritz']:
         for type in ['runtime', 'performance']:
-        
-            filename = f"../jobs/{cluster}/results/operations.txt"
-            imgname = f"../jobs/{cluster}/images/operations_{type}_blocked_inv.pdf"
-            main(filename, imgname, type, cluster)
+            for routine in operations_list:
+                filename = f"../jobs/{cluster}/results/operations.txt"
+                imgname = f"../jobs/{cluster}/images/operations_{routine}_{type}.pdf"
+                main(filename, imgname, type, routine, cluster)
