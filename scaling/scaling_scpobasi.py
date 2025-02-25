@@ -4,6 +4,7 @@ import argparse
 
 from serinv.algs.work_in_progress.scpobaf import scpobaf
 from serinv.algs.work_in_progress.scpobasi import scpobasi
+from storage.utils_ba import dd_ba
 from storage.parameters import calculate_parameters_banded
 from flops.scpobaf_flops import scpobaf_flops
 from flops.scpobasi_flops import scpobasi_flops
@@ -120,7 +121,7 @@ def main():
             n=parameters['parameters']['matrix_size'],
             n_offdiags=parameters['parameters']['n_offdiags'],
             arrowhead_size=parameters['parameters']['arrowhead_blocksize'],
-            overwrite=True,
+            overwrite=overwrite,
             dtype=dtype,
         )
         print(out, end=',')
