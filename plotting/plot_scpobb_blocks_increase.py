@@ -68,7 +68,7 @@ if __name__ == "__main__":
             # f=cholesky, si=selected inversion
             for arrow in [64]: #, 128]: #, 512]:
         
-                filename = f"../../jobs/{cluster}/results/scpobbasi_blocks_{arrow}.txt"
-                filename_ref = f'../../jobs/{cluster}/results/pobtasi_{arrow}.txt'
-                imgname = f"../../jobs/{cluster}/images/scpobba{alg}_blocks_{arrow}_speedup.pdf"
+                filename = f"../jobs/{cluster}/results/scpobbasi_blocks_{arrow}.txt"
+                filename_ref = f'../jobs/{cluster}/results/pobtasi_{arrow}.txt'
+                imgname = f"../jobs/{cluster}/images/scpobba{alg}_blocks_{arrow}_speedup.pdf"
                 main(filename, filename_ref, imgname)

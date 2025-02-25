@@ -27,5 +27,5 @@ for ((j=4; j<13; j++)) do
     repetitions=1000
 
     echo -n "$j," | tee -a results/operations.txt
-    python ../../dev/scaling_operations.py --diag_blocksize=$diag_blocksize --arrowhead_blocksize=$arrowhead_blocksize --repetitions=$repetitions |  tee -a results/operations.txt
+    python ../../scaling/scaling_operations.py --diag_blocksize=$diag_blocksize --arrowhead_blocksize=$arrowhead_blocksize --repetitions=$repetitions |  tee -a results/operations.txt
 done

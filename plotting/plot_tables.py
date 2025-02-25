@@ -26,11 +26,12 @@ def main(filename, filename_ref):
 
 if __name__ == "__main__":
 
+        cluster = 'alex'
         for tile in ['bb', 'b']:  # bb=block n-diag, b=banded
                 for alg in ['f', 'si']:   # f=cholesky, si=selected inversion
                         arrow = 64
 
-                        filename = f'../jobs/alex/results/scpo{tile}a{alg}_{arrow}.txt'
-                        filename_ref = f'../jobs/alex/results/pobta{alg}_{arrow}.txt'
+                        filename = f'../jobs/{cluster}/results/scpo{tile}a{alg}_{arrow}.txt'
+                        filename_ref = f'../jobs/{cluster}/results/pobta{alg}_{arrow}.txt'
                 
                         main(filename, filename_ref)

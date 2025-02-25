@@ -7,7 +7,6 @@
 #SBATCH --gres=gpu:a40:1         # Number of GPUs
 #SBATCH --time=03:00:00          # Wall clock time limit
 #SBATCH -N 1                     # One node
-#SBATCH --exclusive               # Exclusive access
 
 
 # # Load modules
