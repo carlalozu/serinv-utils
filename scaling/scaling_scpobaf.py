@@ -2,9 +2,9 @@ import numpy as np
 import time
 
 from serinv.algs.work_in_progress.scpobaf import scpobaf
-from utils_ba import dd_ba, ba_arrays_to_dense, ba_dense_to_arrays
-from utils import calculate_parameters_banded
-from scpobaf_flops import scpobaf_flops
+from storage.utils_ba import dd_ba, ba_arrays_to_dense, ba_dense_to_arrays
+from storage.parameters import calculate_parameters_banded
+from flops.flops import scpobaf_flops
 
 import argparse
 
@@ -56,7 +56,6 @@ def run_scpobaf(n, n_offdiags, arrowhead_size, overwrite, dtype, fits_memory=Fal
         end_time = time.time()
         out += f"{end_time - start_time},"
 
-
     # Cholesky serinv
     start_time = time.time()
     (
@@ -73,7 +72,6 @@ def run_scpobaf(n, n_offdiags, arrowhead_size, overwrite, dtype, fits_memory=Fal
     )
     end_time = time.time()
     out += f"{end_time - start_time},"
-    
 
     if fits_memory:
 
@@ -93,21 +91,25 @@ def run_scpobaf(n, n_offdiags, arrowhead_size, overwrite, dtype, fits_memory=Fal
         )/4
 
         out += f"{error.item()}"
-    else:   
+    else:
         out += "NA,NA"
 
     return out
 
+
 def main():
     # Set up argument parser
-    parser = argparse.ArgumentParser(description="Configure matrix parameters.")
+    parser = argparse.ArgumentParser(
+        description="Configure matrix parameters.")
     parser.add_argument('--n', type=int, required=True, help="Matrix size.")
-    parser.add_argument('--bandwidth', type=int, required=True, help="Bandwidth.")
-    parser.add_argument('--arrowhead_blocksize', type=int, required=True, help="Arrowhead width.")
+    parser.add_argument('--bandwidth', type=int,
+                        required=True, help="Bandwidth.")
+    parser.add_argument('--arrowhead_blocksize', type=int,
+                        required=True, help="Arrowhead width.")
     parser.add_argument('--numpy_compare', type=int, required=False, default=0,
-        help="Fits memory and compare against numpy.")
+                        help="Fits memory and compare against numpy.")
     parser.add_argument('--overwrite', type=int, required=False, default=1,
-        help="Overwrite the original arrays.")
+                        help="Overwrite the original arrays.")
 
     # Parse arguments
     args = parser.parse_args()
@@ -127,7 +129,6 @@ def main():
     print(parameters['parameters']['matrix_size'], end=',')
     print(parameters['parameters']['bandwidth'], end=',')
     print(parameters['parameters']['arrowhead_blocksize'], end=',')
-
 
     if not parameters['flag']:
         print('NA,NA,NA,NA,NA,NA,NA')

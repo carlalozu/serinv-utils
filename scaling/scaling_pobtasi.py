@@ -5,26 +5,26 @@ import numpy as np
 import scipy.linalg as np_la
 
 from serinv.algs import pobtaf, pobtasi
-from utils_bba import dd_bba, bba_arrays_to_dense, bba_dense_to_arrays
-from utils import calculate_parameters_tri_diagonal
-from flops import T_flops_POBTAF, T_flops_POBTASI
+from storage.utils_bba import dd_bba, bba_arrays_to_dense, bba_dense_to_arrays
+from storage.parameters import calculate_parameters_tri_diagonal
+from flops.flops import T_flops_POBTAF, T_flops_POBTASI
 
 try:
     import cupy as cp
     import cupyx.scipy.linalg as cu_la
-    
+
     CUPY_AVAIL = True
-    xp = cp 
+    xp = cp
     la = cu_la
 
 except ImportError:
-    
+
     CUPY_AVAIL = False
     xp = np
     la = np_la
 
 
-def run_pobtasi(diagonal_blocksize, arrowhead_blocksize, n_t,dtype):
+def run_pobtasi(diagonal_blocksize, arrowhead_blocksize, n_t, dtype):
 
     out = ""
 
@@ -35,7 +35,7 @@ def run_pobtasi(diagonal_blocksize, arrowhead_blocksize, n_t,dtype):
         M_arrow_bottom_blocks,
         M_arrow_tip_block
     ) = dd_bba(
-        1, 
+        1,
         diagonal_blocksize,
         arrowhead_blocksize,
         n_t,
@@ -58,7 +58,7 @@ def run_pobtasi(diagonal_blocksize, arrowhead_blocksize, n_t,dtype):
         False,
     )
     end_time = time.time()
-    out += f"{end_time - start_time}," 
+    out += f"{end_time - start_time},"
 
     # pobtasi time
     start_time = time.time()
@@ -75,7 +75,7 @@ def run_pobtasi(diagonal_blocksize, arrowhead_blocksize, n_t,dtype):
         False,
     )
     end_time = time.time()
-    out += f"{end_time - start_time}" 
+    out += f"{end_time - start_time}"
 
     return out
 
@@ -83,12 +83,12 @@ def run_pobtasi(diagonal_blocksize, arrowhead_blocksize, n_t,dtype):
 def main():
     # Set up argument parser
     parser = argparse.ArgumentParser(description="Configure parameters.")
-    parser.add_argument('--n', type=int, required=True, 
-        help="Matrix size.")
-    parser.add_argument('--bandwidth', type=int, required=True, 
-        help="Bandwidth.")
-    parser.add_argument('--arrowhead_blocksize', type=int, required=True, 
-        help="Arrowhead block width.")
+    parser.add_argument('--n', type=int, required=True,
+                        help="Matrix size.")
+    parser.add_argument('--bandwidth', type=int, required=True,
+                        help="Bandwidth.")
+    parser.add_argument('--arrowhead_blocksize', type=int, required=True,
+                        help="Arrowhead block width.")
 
     # Parse arguments
     args = parser.parse_args()
@@ -106,7 +106,6 @@ def main():
     print(parameters['parameters']['matrix_size'], end=',')
     print(parameters['parameters']['bandwidth'], end=',')
     print(parameters['parameters']['arrowhead_blocksize'], end=',')
-
 
     if not parameters['flag']:
         print('NA,NA,NA,NA,NA,NA,NA')
@@ -139,6 +138,7 @@ def main():
             nb=parameters['parameters']['arrowhead_blocksize']
         )
         print(flops_si)
+
 
 if __name__ == "__main__":
     main()

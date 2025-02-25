@@ -3,28 +3,29 @@ import time
 
 from serinv.algs.work_in_progress.scpobbaf import scpobbaf_c
 from serinv.algs.work_in_progress.scpobbasi import scpobbasi_c
-from utils_bba import dd_bba, bba_arrays_to_dense, bba_dense_to_arrays
-from utils import calculate_parameters_n_diagonal
-from scpobbaf_flops import scpobbaf_flops
-from scpobbasi_flops import scpobbasi_flops
+from storage.utils_bba import dd_bba, bba_arrays_to_dense, bba_dense_to_arrays
+from storage.parameters import calculate_parameters_n_diagonal
+from flops.scpobbaf_flops import scpobbaf_flops
+from flops.scpobbasi_flops import scpobbasi_flops
 
 import argparse
 
 try:
     import cupy as cp
     import cupyx.scipy.linalg as cu_la
-    
+
     CUPY_AVAIL = True
-    xp = cp 
+    xp = cp
     la = cu_la
 
 except ImportError:
-    
+
     import scipy.linalg as np_la
 
     CUPY_AVAIL = False
     xp = np
     la = np_la
+
 
 def run_scpobbasi(
         n_offdiags_blk, diagonal_blocksize, arrowhead_blocksize, n_diag_blocks,
@@ -84,16 +85,16 @@ def run_scpobbasi(
 def main():
     # Set up argument parser
     parser = argparse.ArgumentParser(description="Configure parameters.")
-    parser.add_argument('--n', type=int, required=True, 
-        help="Matrix size.")
-    parser.add_argument('--bandwidth', type=int, required=True, 
-        help="Bandwidth.")
-    parser.add_argument('--arrowhead_blocksize', type=int, required=True, 
-        help="Arrowhead block width.")
-    parser.add_argument('--n_offdiags_blk', type=int, required=True, 
-        help="Number of lower off-diagonal blocks.")
+    parser.add_argument('--n', type=int, required=True,
+                        help="Matrix size.")
+    parser.add_argument('--bandwidth', type=int, required=True,
+                        help="Bandwidth.")
+    parser.add_argument('--arrowhead_blocksize', type=int, required=True,
+                        help="Arrowhead block width.")
+    parser.add_argument('--n_offdiags_blk', type=int, required=True,
+                        help="Number of lower off-diagonal blocks.")
     parser.add_argument('--overwrite', type=int, required=False, default=1,
-        help="Overwrite the original arrays.")
+                        help="Overwrite the original arrays.")
 
     # Parse arguments
     args = parser.parse_args()
@@ -110,13 +111,11 @@ def main():
         n_offdiags_=args.n_offdiags_blk,
     )
 
-
     # print("n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time,numpy_time,error")
 
     print(parameters['parameters']['matrix_size'], end=',')
     print(parameters['parameters']['bandwidth'], end=',')
     print(parameters['parameters']['arrowhead_blocksize'], end=',')
-
 
     if not parameters['flag']:
         print('NA,NA,NA,NA,NA,NA,NA')
@@ -128,10 +127,10 @@ def main():
         print(parameters['parameters']['n_t'], end=',')
 
         out = run_scpobbasi(
-            n_offdiags_blk = parameters['parameters']['n_offdiags'],
-            diagonal_blocksize = parameters['parameters']['diagonal_blocksize'],
-            arrowhead_blocksize = parameters['parameters']['arrowhead_blocksize'],
-            n_diag_blocks = parameters['parameters']['n_t'],
+            n_offdiags_blk=parameters['parameters']['n_offdiags'],
+            diagonal_blocksize=parameters['parameters']['diagonal_blocksize'],
+            arrowhead_blocksize=parameters['parameters']['arrowhead_blocksize'],
+            n_diag_blocks=parameters['parameters']['n_t'],
             dtype=dtype,
             overwrite=overwrite,
         )

@@ -2,9 +2,9 @@ import numpy as np
 import time
 
 from serinv.algs.work_in_progress.scpobbaf import scpobbaf_c
-from utils_bba import dd_bba, bba_arrays_to_dense, bba_dense_to_arrays
-from utils import calculate_parameters_n_diagonal
-from scpobbaf_flops import scpobbaf_flops
+from storage.utils_bba import dd_bba, bba_arrays_to_dense, bba_dense_to_arrays
+from storage.parameters import calculate_parameters_n_diagonal
+from flops.scpobbaf_flops import scpobbaf_flops
 
 import argparse
 
@@ -23,6 +23,7 @@ except ImportError:
 
     xp = np
     cholesky = np.linalg.cholesky
+
 
 def run_pobbaf(
         n_offdiags_blk, diagonal_blocksize, arrowhead_blocksize, n_diag_blocks,
@@ -91,9 +92,9 @@ def run_pobbaf(
 
         # Error between dense decomposition and numpy
         error = (
-            xp.mean(L_ref_diagonal_blocks - L_diagonal_blocks)+
-            xp.mean(L_ref_lower_diagonal_blocks - L_lower_diagonal_blocks)+
-            xp.mean(L_ref_arrow_bottom_blocks - L_arrow_bottom_blocks)+
+            xp.mean(L_ref_diagonal_blocks - L_diagonal_blocks) +
+            xp.mean(L_ref_lower_diagonal_blocks - L_lower_diagonal_blocks) +
+            xp.mean(L_ref_arrow_bottom_blocks - L_arrow_bottom_blocks) +
             xp.mean(L_ref_arrow_tip_block - L_arrow_tip_block)
         )/4
         out += f"{error.item()}"
@@ -107,18 +108,18 @@ def run_pobbaf(
 def main():
     # Set up argument parser
     parser = argparse.ArgumentParser(description="Configure parameters.")
-    parser.add_argument('--n', type=int, required=True, 
-        help="Matrix size.")
-    parser.add_argument('--bandwidth', type=int, required=True, 
-        help="Bandwidth.")
-    parser.add_argument('--arrowhead_blocksize', type=int, required=True, 
-        help="Arrowhead block width.")
-    parser.add_argument('--n_offdiags_blk', type=int, required=True, 
-        help="Number of lower off-diagonal blocks.")
+    parser.add_argument('--n', type=int, required=True,
+                        help="Matrix size.")
+    parser.add_argument('--bandwidth', type=int, required=True,
+                        help="Bandwidth.")
+    parser.add_argument('--arrowhead_blocksize', type=int, required=True,
+                        help="Arrowhead block width.")
+    parser.add_argument('--n_offdiags_blk', type=int, required=True,
+                        help="Number of lower off-diagonal blocks.")
     parser.add_argument('--numpy_compare', type=int, required=False, default=0,
-        help="Fits memory and compare against numpy.")
+                        help="Fits memory and compare against numpy.")
     parser.add_argument('--overwrite', type=int, required=False, default=1,
-        help="Overwrite the original arrays.")
+                        help="Overwrite the original arrays.")
 
     # Parse arguments
     args = parser.parse_args()
@@ -136,7 +137,6 @@ def main():
         n_offdiags_=args.n_offdiags_blk,
     )
 
-
     # print("n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time,numpy_time,error")
 
     print(parameters['parameters']['matrix_size'], end=',')
@@ -153,10 +153,10 @@ def main():
         print(parameters['parameters']['n_t'], end=',')
 
         out = run_pobbaf(
-            n_offdiags_blk = parameters['parameters']['n_offdiags'],
-            diagonal_blocksize = parameters['parameters']['diagonal_blocksize'],
-            arrowhead_blocksize = parameters['parameters']['arrowhead_blocksize'],
-            n_diag_blocks = parameters['parameters']['n_t'],
+            n_offdiags_blk=parameters['parameters']['n_offdiags'],
+            diagonal_blocksize=parameters['parameters']['diagonal_blocksize'],
+            arrowhead_blocksize=parameters['parameters']['arrowhead_blocksize'],
+            n_diag_blocks=parameters['parameters']['n_t'],
             dtype=dtype,
             fits_memory=numpy_compare,
             overwrite=overwrite,
@@ -169,9 +169,8 @@ def main():
             diagonal_blocksize=parameters['parameters']['diagonal_blocksize'],
             arrowhead_blocksize=parameters['parameters']['arrowhead_blocksize'],
             n_offdiags_blk=parameters['parameters']['n_offdiags'],
-            )
+        )
         print(flops)
-
 
 
 if __name__ == "__main__":

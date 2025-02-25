@@ -4,26 +4,26 @@ import argparse
 
 from serinv.algs.work_in_progress.scpobaf import scpobaf
 from serinv.algs.work_in_progress.scpobasi import scpobasi
-from utils_ba import dd_ba, ba_arrays_to_dense, ba_dense_to_arrays
-from utils import calculate_parameters_banded
-from scpobaf_flops import scpobaf_flops
-from scpobasi_flops import scpobasi_flops
+from storage.parameters import calculate_parameters_banded
+from flops.scpobaf_flops import scpobaf_flops
+from flops.scpobasi_flops import scpobasi_flops
 
 try:
     import cupy as cp
     import cupyx.scipy.linalg as cu_la
-    
+
     CUPY_AVAIL = True
-    xp = cp 
+    xp = cp
     la = cu_la
 
 except ImportError:
-    
+
     import scipy.linalg as np_la
 
     CUPY_AVAIL = False
     xp = np
     la = np_la
+
 
 def run_scpobasi(n, n_offdiags, arrowhead_size, overwrite, dtype):
     out = ""
@@ -40,7 +40,7 @@ def run_scpobasi(n, n_offdiags, arrowhead_size, overwrite, dtype):
         dtype,
         factor=int(np.sqrt(n))
     )
-    
+
     # Cholesky decomposition serinv
     start_time = time.time()
     (
@@ -77,14 +77,18 @@ def run_scpobasi(n, n_offdiags, arrowhead_size, overwrite, dtype):
 
     return out
 
+
 def main():
     # Set up argument parser
-    parser = argparse.ArgumentParser(description="Configure matrix parameters.")
+    parser = argparse.ArgumentParser(
+        description="Configure matrix parameters.")
     parser.add_argument('--n', type=int, required=True, help="Matrix size.")
-    parser.add_argument('--bandwidth', type=int, required=True, help="Bandwidth.")
-    parser.add_argument('--arrowhead_blocksize', type=int, required=True, help="Arrowhead width.")
+    parser.add_argument('--bandwidth', type=int,
+                        required=True, help="Bandwidth.")
+    parser.add_argument('--arrowhead_blocksize', type=int,
+                        required=True, help="Arrowhead width.")
     parser.add_argument('--overwrite', type=int, required=False, default=1,
-        help="Overwrite the original arrays.")
+                        help="Overwrite the original arrays.")
 
     # Parse arguments
     args = parser.parse_args()
@@ -102,7 +106,6 @@ def main():
     print(parameters['parameters']['matrix_size'], end=',')
     print(parameters['parameters']['bandwidth'], end=',')
     print(parameters['parameters']['arrowhead_blocksize'], end=',')
-
 
     if not parameters['flag']:
         print('NA,NA,NA,NA,NA,NA,NA')
@@ -129,7 +132,7 @@ def main():
             arrowhead_blocksize=parameters['parameters']['arrowhead_blocksize'],
         )
         print(flops_c, end=',')
-        
+
         flops_si = scpobasi_flops(
             n_diag_blocks=parameters['parameters']['n_t'],
             n_offdiags=parameters['parameters']['n_offdiags'],

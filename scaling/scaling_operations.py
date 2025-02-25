@@ -21,11 +21,13 @@ except ImportError:
     la = np_la
     cholesky = np.linalg.cholesky
 
+
 def spd(m, factor):
     # Make matrix positive def
     for i in range(m.shape[0]):
         m[i, i] = (1 + xp.sum(m[i, :]))*factor
     m[:, :] = (m[:, :] + m[:, :].conj())/2
+
 
 def run_operations(diag_blocksize, arrowhead_blocksize, repetitions, dtype):
 
@@ -35,7 +37,7 @@ def run_operations(diag_blocksize, arrowhead_blocksize, repetitions, dtype):
         (diag_blocksize, diag_blocksize),
         dtype=dtype
     )
-    block_ns_ns[:,:] = xp.random.rand(
+    block_ns_ns[:, :] = xp.random.rand(
         *(diag_blocksize, diag_blocksize),
     )
     # Make matrix positive def
@@ -48,7 +50,7 @@ def run_operations(diag_blocksize, arrowhead_blocksize, repetitions, dtype):
         (arrowhead_blocksize, diag_blocksize),
         dtype=dtype
     )
-    block_nb_ns[:,:] = xp.random.rand(
+    block_nb_ns[:, :] = xp.random.rand(
         *(arrowhead_blocksize, diag_blocksize),
     )
     block_nb_ns_out = xp.zeros(
@@ -60,21 +62,21 @@ def run_operations(diag_blocksize, arrowhead_blocksize, repetitions, dtype):
         (arrowhead_blocksize, arrowhead_blocksize),
         dtype=dtype
     )
-    block_nb_nb[:,:] = xp.random.rand(
+    block_nb_nb[:, :] = xp.random.rand(
         *(arrowhead_blocksize, arrowhead_blocksize),
     )
     block_nb_nb_out = xp.zeros(
         (arrowhead_blocksize, arrowhead_blocksize),
         dtype=dtype
     )
-    
+
     vector_ns = xp.random.rand(diag_blocksize)
     vector_ns_out = xp.zeros(diag_blocksize,
-        dtype=dtype)
+                             dtype=dtype)
 
     vector_nb = xp.random.rand(arrowhead_blocksize)
     vector_nb_out = xp.zeros(arrowhead_blocksize,
-        dtype=dtype)
+                             dtype=dtype)
 
     element = np.random.rand(1)
     element_out = xp.zeros(1, dtype=dtype)
@@ -157,7 +159,6 @@ def run_operations(diag_blocksize, arrowhead_blocksize, repetitions, dtype):
     print(time_taken)
 
 
-
 def main():
     # Set up argument parser
     parser = argparse.ArgumentParser(description="Configure parameters.")
@@ -181,7 +182,6 @@ def main():
         repetitions=args.repetitions,
         dtype=dtype,
     )
-
 
 
 if __name__ == "__main__":

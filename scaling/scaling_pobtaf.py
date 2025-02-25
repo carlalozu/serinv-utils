@@ -3,9 +3,9 @@ import argparse
 import numpy as np
 
 from serinv.algs import pobtaf
-from utils_bba import dd_bba, bba_arrays_to_dense, bba_dense_to_arrays
-from utils import calculate_parameters_tri_diagonal
-from flops import T_flops_POBTAF
+from storage.utils_bba import dd_bba, bba_arrays_to_dense, bba_dense_to_arrays
+from storage.parameters import calculate_parameters_tri_diagonal
+from flops.flops import T_flops_POBTAF
 
 try:
     import cupy as cp
@@ -22,7 +22,7 @@ except ImportError:
     xp = np
     cholesky = np.linalg.cholesky
 
-            
+
 def run_pobtaf(
         diagonal_blocksize, arrowhead_blocksize, n_t,
         dtype, fits_memory=False, streaming=False):
@@ -36,7 +36,7 @@ def run_pobtaf(
         M_arrow_bottom_blocks,
         M_arrow_tip_block
     ) = dd_bba(
-        1, 
+        1,
         diagonal_blocksize,
         arrowhead_blocksize,
         n_t,
@@ -55,7 +55,7 @@ def run_pobtaf(
         start_time = time.time()
         I_ref = cholesky(M)
         end_time = time.time()
-        out += f"{end_time - start_time}," # numpy time
+        out += f"{end_time - start_time},"  # numpy time
 
     # Do inversion on compressed format
     start_time = time.time()
@@ -72,8 +72,7 @@ def run_pobtaf(
         streaming,
     )
     end_time = time.time()
-    out += f"{end_time - start_time}," # time
-
+    out += f"{end_time - start_time},"  # time
 
     if fits_memory:
         # From compressed to dense
@@ -92,12 +91,12 @@ def run_pobtaf(
 
         # Error between dense decomposition and numpy
         error = (
-            xp.mean(L_ref_diagonal_blocks - L_diagonal_blocks)+
-            xp.mean(L_ref_lower_diagonal_blocks - L_lower_diagonal_blocks)+
-            xp.mean(L_ref_arrow_bottom_blocks - L_arrow_bottom_blocks)+
+            xp.mean(L_ref_diagonal_blocks - L_diagonal_blocks) +
+            xp.mean(L_ref_lower_diagonal_blocks - L_lower_diagonal_blocks) +
+            xp.mean(L_ref_arrow_bottom_blocks - L_arrow_bottom_blocks) +
             xp.mean(L_ref_arrow_tip_block - L_arrow_tip_block)
         )/4
-        out += f"{error.item()}" # error
+        out += f"{error.item()}"  # error
 
     else:
         out += "NA,NA"
@@ -108,17 +107,17 @@ def run_pobtaf(
 def main():
     # Set up argument parser
     parser = argparse.ArgumentParser(description="Configure parameters.")
-    parser.add_argument('--n', type=int, required=True, 
-        help="Matrix size.")
-    parser.add_argument('--bandwidth', type=int, required=True, 
-        help="Bandwidth.")
-    parser.add_argument('--arrowhead_blocksize', type=int, required=True, 
-        help="Arrowhead block width.")
+    parser.add_argument('--n', type=int, required=True,
+                        help="Matrix size.")
+    parser.add_argument('--bandwidth', type=int, required=True,
+                        help="Bandwidth.")
+    parser.add_argument('--arrowhead_blocksize', type=int, required=True,
+                        help="Arrowhead block width.")
     parser.add_argument('--streaming', type=int, required=False, default=0,
-        help="Device streaming.")
+                        help="Device streaming.")
     parser.add_argument('--numpy_compare', type=int, required=False, default=0,
-        help="Fits memory and compare against numpy.")
-    
+                        help="Fits memory and compare against numpy.")
+
     # Parse arguments
     args = parser.parse_args()
     parameters = calculate_parameters_tri_diagonal(
@@ -137,7 +136,6 @@ def main():
     print(parameters['parameters']['matrix_size'], end=',')
     print(parameters['parameters']['bandwidth'], end=',')
     print(parameters['parameters']['arrowhead_blocksize'], end=',')
-
 
     if not parameters['flag']:
         print('NA,NA,NA,NA,NA,NA,NA')
@@ -166,6 +164,7 @@ def main():
             nb=parameters['parameters']['arrowhead_blocksize']
         )
         print(flops)
+
 
 if __name__ == "__main__":
     main()
