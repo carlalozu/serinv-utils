@@ -1,13 +1,12 @@
 #!/bin/bash
-#SBATCH --job-name=scpobbaf_blocks      # Job name   
-#SBATCH --output=scpobbaf_blocks-%j.out # Output file
-#SBATCH --error=scpobbaf_blocks-%j.err  # Error file 
+#SBATCH --job-name=scpobbasi_blocks      # Job name   
+#SBATCH --output=outputs/scpobbasi_blocks-%j.out # Output file
+#SBATCH --error=outputs/scpobbasi_blocks-%j.err  # Error file 
 #SBATCH --ntasks=72               # Number of tasks
 #SBATCH --cpus-per-task=1         # Number of CPUs per task
 #SBATCH --mem-per-cpu=1024        # Memory per CPU
 #SBATCH --time=02:00:00           # Wall clock time limit
 #SBATCH -N 1                     # One node
-#SBATCH --exclusive               # Exclusive access
 
 # Load modules
 # module load gcc openmpi python
@@ -33,7 +32,6 @@ for ((j=i-7; j<i-2; j++)) do
     bandwidth=$((2**j+1)) # must be odd
     n=$((inside_n+arrowhead_blocksize)) # total matrix size
 
-    numpy_compare=0
     overwrite=1
     n_runs=6
     
@@ -45,7 +43,7 @@ for ((j=i-7; j<i-2; j++)) do
         echo "Running $script with matrix size $n, bandwidth $bandwidth, j $j, diagonal_blocksize $diagonal_blocksize"
         for ((r=0; r<n_runs; r++)) do
             echo -n "$r,$j," | tee -a results/$output_file
-            python ../../scaling/$script --n=$n --bandwidth=$bandwidth --arrowhead_blocksize=$arrowhead_blocksize --n_offdiags_blk=$n_offdiags_blk --numpy_compare=$numpy_compare --overwrite=$overwrite| tee -a results/$output_file
+            python ../../scaling/$script --n=$n --bandwidth=$bandwidth --arrowhead_blocksize=$arrowhead_blocksize --n_offdiags_blk=$n_offdiags_blk --overwrite=$overwrite| tee -a results/$output_file
         done
 
     done

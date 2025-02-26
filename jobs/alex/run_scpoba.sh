@@ -4,7 +4,7 @@
 #SBATCH --error=outputs/scpobasi-%j.err  # Error file 
 #SBATCH --ntasks=1               # Number of tasks
 #SBATCH --cpus-per-task=16       # Number of CPUs per task
-#SBATCH --gres=gpu:a40:1         # Number of GPUs
+#SBATCH --gres=gpu:a100:1         # Number of GPUs
 #SBATCH --time=03:00:00          # Wall clock time limit
 #SBATCH -N 1                     # One node
 
