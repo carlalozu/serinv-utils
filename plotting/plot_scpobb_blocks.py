@@ -74,12 +74,13 @@ def main(filename, imgname, alg, type, cluster):
 
 if __name__ == "__main__":
 
+    arrow = 64
     for cluster in ['fritz', 'alex']:
         for alg in ['f', 'si']:
             # f=cholesky, si=selected inversion
-            for arrow in [64]: #, 128]:
-                for type in ['runtime', 'performance']:
-                    filename = f"../jobs/{cluster}/results/scpobbasi_blocks_{arrow}.txt"
-                    imgname = f"../jobs/{cluster}/images/scpobba{alg}_blocks_{arrow}_{type}.pdf"
 
-                    main(filename, imgname, alg, type, cluster)
+            for type in ['runtime', 'performance']:
+                filename = f"../jobs/{cluster}/results/scpobbasi_blocks_{arrow}.txt"
+                imgname = f"../jobs/{cluster}/images/scpobba{alg}_blocks_{arrow}_{type}.pdf"
+
+                main(filename, imgname, alg, type, cluster)

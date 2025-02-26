@@ -8,6 +8,15 @@ from const import PEAK_PERFORMANCE, PLT_PARAMS, OEPRATIONS_FLOPS
 plt.rcParams.update(PLT_PARAMS)
 
 operations_list = {
+"banded" : [
+    'dgemm_ns3',
+    'scale_ns',
+    'dot_prod_ns',
+    'matrix_vector_nsns',
+    'matrix_vector_nsnb',
+    'cholesky_ns3',
+    'triang_solve_ns3',
+],
 "block_chol" : [
     'dgemm_ns3',
     'dgemm_ns2nb',
@@ -22,29 +31,12 @@ operations_list = {
     'dgemm_nb2ns',
     'triang_solve_ns3',
 ],
-"banded_chol" : [
-    'dgemm_ns3',
-    'scale_ns',
-    'dot_prod_ns',
-    'matrix_vector_nsns',
-    'matrix_vector_nsnb',
-    'cholesky_ns3',
-],
-"banded_inv" : [
-    'dgemm_ns3',
-    'scale_ns',
-    'dot_prod_ns',
-    'matrix_vector_nsns',
-    'matrix_vector_nsnb',
-    'cholesky_ns3',
-]
 }
 
 lims = {
     'block_chol':(16,2048),
     'block_inv':(16,2048),
-    'banded_chol':(256,2048),
-    'banded_inv':(256,2048),
+    'banded':(64,2048),
 }
 
 def main(filename, imgname, type, routine, cluster):

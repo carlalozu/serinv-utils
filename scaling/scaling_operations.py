@@ -84,13 +84,13 @@ def run_operations(diag_blocksize, arrowhead_blocksize, repetitions, dtype):
 
     # Do Cholesky
     def cholesky_op():
-        block_ns_ns_out[:, :] += cholesky(block_ns_ns)
+        block_ns_ns_out[:, :] = cholesky(block_ns_ns)
     time_taken = Timer(cholesky_op).timeit(number=repetitions)
     print(time_taken, end=',')
 
     # Do triangular solve ns^3
     def triangular_solve_ns3():
-        block_ns_ns_out[:, :] += la.solve_triangular(
+        block_ns_ns_out[:, :] = la.solve_triangular(
             block_ns_ns, block_ns_ns.T, lower=True
         ).T
     time_taken = Timer(triangular_solve_ns3).timeit(number=repetitions)
