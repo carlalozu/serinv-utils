@@ -14,10 +14,11 @@
 
 # # Open venv
 # conda activate serinv_env
+arrowhead_blocksize=64
 
 # Parameters
 script="scaling_scpobbasi.py"
-output_file=scpobbasi_blocks_64.txt
+output_file=scpobbasi_blocks_$arrowhead_blocksize.txt
 
 # Create output files
 > results/$output_file
@@ -26,17 +27,16 @@ echo "run,id,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocks
 i=16
 inside_n=$((2**i))
 
-for ((j=13; j<i-2; j++)) do
+for ((j=i-7; j<i-2; j++)) do
 
-    arrowhead_blocksize=64
     bandwidth=$((2**j+1)) # must be odd
     n=$((inside_n+arrowhead_blocksize)) # total matrix size
 
-    numpy_compare=0
     overwrite=1
-    n_runs=6
     
     for ((k=0; k<6; k++)) do
+        
+        n_runs=10
 
         # Fixed number of off diagonal blocks
         n_offdiags_blk=$((2**k))

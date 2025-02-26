@@ -25,7 +25,7 @@ for ((i=0; i<9; i++)) do
     diag_blocksize=$((2**j))
     arrowhead_blocksize=$((64))
 
-    repetitions=$((10**(5-i/3)))
+    repetitions=$((10**5/(1+i/4)))
 
     echo -n "$j," | tee -a results/operations.txt
     python ../../scaling/scaling_operations.py --diag_blocksize=$diag_blocksize --arrowhead_blocksize=$arrowhead_blocksize --repetitions=$repetitions |  tee -a results/operations.txt

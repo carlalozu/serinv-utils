@@ -14,23 +14,24 @@
 # Open venv
 # conda activate serinv_cpu
 
+i=16
+inside_n=$((2**i))
+arrowhead_blocksize=128
+n=$((inside_n+arrowhead_blocksize)) # total matrix size
+
 # Parameters
 script="scaling_scpobbasi.py"
-output_file=scpobbasi_blocks_64.txt
+output_file=scpobbasi_blocks_$arrowhead_blocksize.txt
 
 # Create output files
 > results/$output_file
 
 echo "run,id,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,scpobbaf_time,scpobbasi_time,scpobbaf_FLOPS,scpobbasi_FLOPS"  | tee -a results/$output_file
 
-i=16
-inside_n=$((2**i))
 
 for ((j=i-7; j<i-2; j++)) do
 
-    arrowhead_blocksize=64
     bandwidth=$((2**j+1)) # must be odd
-    n=$((inside_n+arrowhead_blocksize)) # total matrix size
 
     overwrite=1
     n_runs=6
