@@ -1,17 +1,11 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from const import PLT_PARAMS
 import sys
 
 plt.style.use("seaborn-v0_8-colorblind")
-plt.rcParams.update({
-    'axes.labelsize': 16,  # X and Y label font size
-    'axes.titlesize': 16,  # Title font size
-    'xtick.labelsize': 14,  # X-tick labels font size
-    'ytick.labelsize': 14,  # Y-tick labels font size
-    'legend.fontsize': 14,   # Legend font size
-    'lines.linewidth': 3,
-})
+plt.rcParams.update(PLT_PARAMS)
 
 
 def main(filename, filename_ref, imgname):
@@ -51,8 +45,6 @@ def main(filename, filename_ref, imgname):
 
     # plt.yscale('log', base=10)
     plt.ylabel('Speedup')
-
-    plt.title(f'matrix size={int(matrix_size)}, $n_b$={int(arrowhead)}')
 
     # Customize the plot
     plt.grid(True, which="both", ls="-", alpha=0.2)

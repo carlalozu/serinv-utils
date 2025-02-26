@@ -1,17 +1,12 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-import sys
+from const import PEAK_PERFORMANCE, PLT_PARAMS
+
 
 plt.style.use("seaborn-v0_8-colorblind")
-plt.rcParams.update({
-    'axes.labelsize': 16,  # X and Y label font size
-    'axes.titlesize': 16,  # Title font size
-    'xtick.labelsize': 14,  # X-tick labels font size
-    'ytick.labelsize': 14,  # Y-tick labels font size
-    'legend.fontsize': 14,   # Legend font size
-    'lines.linewidth': 3,
-})
+plt.rcParams.update(PLT_PARAMS)
+
 
 def main(filename, imgname, alg, type, cluster):
     data_ = pd.read_csv(filename)
@@ -58,11 +53,8 @@ def main(filename, imgname, alg, type, cluster):
     plt.xlim(nss[1], nss[-1])
 
     if type=='performance':
-        peak_perf = 2764.8 # GFLOPS
-        if cluster=='alex':
-            peak_perf =  37400  # 37.4 TFLOPS
         plt.hlines(
-            peak_perf, # peak node performance
+            PEAK_PERFORMANCE[cluster], # peak node performance
             xmin=nss[0], xmax=nss[-1],
             color='red', alpha=0.5,
             label="peak",
@@ -73,9 +65,6 @@ def main(filename, imgname, alg, type, cluster):
     plt.ylabel(ylabel)
 
     plt.xlabel(f'$n_s$')
-    
-    title = f'matrix size={matrix_size}, $n_b$={int(arrowhead)}'
-    plt.title(title)
 
     plt.grid(True, which="both", ls="-", alpha=0.2)
     plt.legend(loc='best', frameon=True, shadow=True)

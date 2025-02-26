@@ -1,15 +1,10 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+from const import PEAK_PERFORMANCE, PLT_PARAMS
 
 plt.style.use("seaborn-v0_8-colorblind")
-plt.rcParams.update({
-    'axes.labelsize': 16,  # X and Y label font size
-    'axes.titlesize': 16,  # Title font size
-    'xtick.labelsize': 14,  # X-tick labels font size
-    'ytick.labelsize': 14,  # Y-tick labels font size
-    'legend.fontsize': 14,   # Legend font size
-    'lines.linewidth': 3,
-})
+plt.rcParams.update(PLT_PARAMS)
+
 
 def main(filename, filename_ref, imgname, alg='f', cluster='fritz'):
     data_ = pd.read_csv(filename)
@@ -19,8 +14,8 @@ def main(filename, filename_ref, imgname, alg='f', cluster='fritz'):
 
     arrowhead = list(data_['arrowhead_blocksize'])[0]
 
-    grouped_data = data_.groupby('n_offdiags').mean()
-    grouped_data_ref = data_ref_.groupby('diagonal_blocksize').mean()
+    grouped_data = data_.groupby('n_offdiags').median()
+    grouped_data_ref = data_ref_.groupby('diagonal_blocksize').median()
 
     # Plot mean times with error bars
     ax1.errorbar(
@@ -55,11 +50,8 @@ def main(filename, filename_ref, imgname, alg='f', cluster='fritz'):
         linestyle = '--',
     )
 
-    peak_perf = 2764.8 # GFLOPS
-    if cluster=='alex':
-        peak_perf =  37400  # 37.4 TFLOPS
     ax2.hlines(
-        peak_perf, 
+        PEAK_PERFORMANCE[cluster], # peak node performance
         xmin=grouped_data.index[0],
         xmax=grouped_data.index[-1],
         color='red',
@@ -69,7 +61,7 @@ def main(filename, filename_ref, imgname, alg='f', cluster='fritz'):
     )
 
     plt.xticks(grouped_data.index, [str(tick) for tick in grouped_data.index])
-    plt.xlim(grouped_data.index[0], grouped_data.index[-1])
+    plt.xlim(grouped_data.index[0], 2048)
     ax1.set_xlabel(f'$n_s$')
 
     # ax1.set_ylim(10e-2, 10e1)
@@ -79,8 +71,6 @@ def main(filename, filename_ref, imgname, alg='f', cluster='fritz'):
     # ax2.set_ylim(10e-2, 10e4)
     ax2.set_yscale('log', base=10)
     ax2.set_ylabel('Performance (GFLOPS/sec)')
-
-    plt.title(f'   ')
 
     plt.grid(True, which="both", ls="-", alpha=0.2)
     ax1.legend(loc='upper left', frameon=True, shadow=False)
