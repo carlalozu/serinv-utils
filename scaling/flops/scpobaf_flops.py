@@ -13,7 +13,8 @@ def scpobaf_flops(n_diagonals, n_offdiags, arrowhead_blocksize):
         'matrix_vector_nsns': 0,
         'matrix_vector_nsnb': 0,
         'DGEMM_nb3': 0,
-        'GER_nb2': 0
+        'GER_nb2': 0,
+        'cholesky_nb': 0,
     }
 
     for i in range(n_diagonals-1):

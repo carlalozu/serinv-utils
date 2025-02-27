@@ -6,7 +6,7 @@ def scpobasi_flops(n_diagonals, n_offdiags, arrowhead_blocksize):
         'triangular_solve_nb3': 0,
         'vector_scaling_ns': 0,
         'vector_scaling_nb': 0,
-        'element_scaling': 0,
+        'mult': 0,
         'div': 0,
         'dot_product_ns': 0,
         'dot_product_nb': 0,
@@ -33,7 +33,7 @@ def scpobasi_flops(n_diagonals, n_offdiags, arrowhead_blocksize):
     # X_{ndb,ndb}
     counts['dot_product_nb'] += 1
     FLOPS += 2 * arrowhead_blocksize
-    counts['element_scaling'] += 1
+    counts['mult'] += 1
     FLOPS += 1
 
     # Rest of the matrix
@@ -73,7 +73,7 @@ def scpobasi_flops(n_diagonals, n_offdiags, arrowhead_blocksize):
         FLOPS += 2 * tail
         counts['dot_product_nb'] += 1
         FLOPS += 2 * arrowhead_blocksize
-        counts['element_scaling'] += 1
+        counts['mult'] += 1
         FLOPS += 1
 
     return int(FLOPS), counts
