@@ -7,8 +7,12 @@ import sys
 plt.style.use("seaborn-v0_8-colorblind")
 plt.rcParams.update(PLT_PARAMS)
 
+lims = {
+    'alex':(16,4096),
+    'fritz':(16,2048),
+}
 
-def main(filename, filename_ref, imgname):
+def main(filename, filename_ref, imgname, cluster):
     data_scpobbaf = pd.read_csv(filename)
     data_pobtaf = pd.read_csv(filename_ref)
 
@@ -42,6 +46,7 @@ def main(filename, filename_ref, imgname):
 
     nss = sorted(data_scpobbaf['diagonal_blocksize'].unique())
     plt.xticks(nss, [str(tick) for tick in nss])
+    plt.xlim(*lims[cluster])
 
     # plt.yscale('log', base=10)
     plt.ylabel('Speedup')
@@ -64,4 +69,4 @@ if __name__ == "__main__":
             filename = f"../jobs/{cluster}/results/scpobbasi_blocks_{arrow}.txt"
             filename_ref = f'../jobs/{cluster}/results/pobtasi_{arrow}.txt'
             imgname = f"../jobs/{cluster}/images/scpobba{alg}_blocks_{arrow}_speedup.pdf"
-            main(filename, filename_ref, imgname)
+            main(filename, filename_ref, imgname, cluster)

@@ -28,8 +28,8 @@ def main(filename, filename_ref, output_filename, tile, alg):
 
 if __name__ == "__main__":
 
-        cluster = 'alex'
-        for tile in ['bb']:  # bb=block n-diag, b=banded
+        cluster = 'alex' # alex, fritz
+        for tile in ['b', 'bb']:  # bb=block n-diag, b=banded
                 for alg in ['f', 'si']:
 
                         arrow = 64

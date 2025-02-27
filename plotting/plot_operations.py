@@ -34,15 +34,18 @@ operations_list = {
 }
 
 lims = {
-    'block_chol':(16,2048),
-    'block_inv':(16,2048),
-    'banded':(64,2048),
+    'block_chol_alex':(16,4096),
+    'block_inv_alex':(16,4096),
+    'block_chol_fritz':(16,2048),
+    'block_inv_fritz':(16,2048),
+    'banded_alex':(64,2048),
+    'banded_fritz':(64,2048),
 }
 
 def main(filename, imgname, type, routine, cluster):
     data = pd.read_csv(filename)
 
-    data_g = data.groupby('diag_blocksize').median()
+    data_g = data.groupby('diag_blocksize').sum()
 
     plt.figure(figsize=(8, 6))
 
@@ -84,7 +87,7 @@ def main(filename, imgname, type, routine, cluster):
     if 'block' in routine:
         plt.xscale('log', base=2)
     plt.xticks(data_g.index, [str(int(tick)) for tick in data_g.index])
-    plt.xlim(*lims[routine])
+    plt.xlim(*lims[f'{routine}_{cluster}'])
     plt.xlabel(f'$n_s$')
 
     plt.yscale('log', base=10)
