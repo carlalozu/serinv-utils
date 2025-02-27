@@ -3,11 +3,30 @@ def scpobaf_flops(n_diagonals, n_offdiags, arrowhead_blocksize):
 
     # Process banded part of the matrix
     FLOPS:int = 0
+
+    counts = {
+        'triangular_solve_nb3': 0,
+        'vector_scaling_ns': 0,
+        'vector_scaling_nb': 0,
+        'element_scaling': 0,
+        'div': 0,
+        'sqrt': 0,
+        'dot_product_ns': 0,
+        'dot_product_nb': 0,
+        'matrix_vector_nsns': 0,
+        'matrix_vector_nsnb': 0,
+        'matrix_vector_nbnb': 0,
+        'DGEMM_nb3': 0,
+        'GER_nb2': 0
+    }
+
     for i in range(n_diagonals-1):
 
         # L_{i, i} = chol(A_{i, i})
+        counts['sqrt'] += 1
         FLOPS += 1  # 1 sqrt
 
+        counts['div'] += 1
         FLOPS += 1 # 1 div
 
         # Update column i of the lower diagonals
@@ -43,4 +62,4 @@ def scpobaf_flops(n_diagonals, n_offdiags, arrowhead_blocksize):
     # L_{ndb+1, ndb+1} = chol(A_{ndb+1, ndb+1})
     FLOPS += 1/3*arrowhead_blocksize**3 + 1/2*arrowhead_blocksize**2 + 1/6*arrowhead_blocksize  # cholesky
 
-    return int(FLOPS)
+    return int(FLOPS), counts

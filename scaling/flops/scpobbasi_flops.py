@@ -94,4 +94,4 @@ def scpobbasi_flops(n_diag_blocks, diagonal_blocksize, arrowhead_blocksize, n_of
         counts['DGEMM_ns3'] += 1
         FLOPS += 2 * diagonal_blocksize**3
 
-    return int(FLOPS)
+    return int(FLOPS), counts

@@ -137,7 +137,7 @@ def main():
         # GET FLOPS
         print(out, end=',')
 
-        flops_c = scpobbaf_flops(
+        flops_c, _ = scpobbaf_flops(
             n_diag_blocks=parameters['parameters']['n_t'],
             diagonal_blocksize=parameters['parameters']['diagonal_blocksize'],
             arrowhead_blocksize=parameters['parameters']['arrowhead_blocksize'],
@@ -145,7 +145,7 @@ def main():
         )
         print(flops_c, end=',')
 
-        flops_si = scpobbasi_flops(
+        flops_si, _ = scpobbasi_flops(
             n_diag_blocks=parameters['parameters']['n_t'],
             diagonal_blocksize=parameters['parameters']['diagonal_blocksize'],
             arrowhead_blocksize=parameters['parameters']['arrowhead_blocksize'],

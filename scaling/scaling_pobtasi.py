@@ -125,14 +125,14 @@ def main():
         print(out, end=',')
 
         # GET FLOPS
-        flops_c = T_flops_POBTAF(
+        flops_c, _ = T_flops_POBTAF(
             nt=parameters['parameters']['n_t'],
             ns=parameters['parameters']['diagonal_blocksize'],
             nb=parameters['parameters']['arrowhead_blocksize']
         )
         print(flops_c, end=',')
 
-        flops_si = T_flops_POBTASI(
+        flops_si, _ = T_flops_POBTASI(
             nt=parameters['parameters']['n_t'],
             ns=parameters['parameters']['diagonal_blocksize'],
             nb=parameters['parameters']['arrowhead_blocksize']

@@ -1,7 +1,6 @@
 
 def scpobasi_flops(n_diagonals, n_offdiags, arrowhead_blocksize):
 
-
     FLOPS = 0
     counts = {
         'triangular_solve_nb3': 0,
@@ -77,4 +76,4 @@ def scpobasi_flops(n_diagonals, n_offdiags, arrowhead_blocksize):
         counts['element_scaling'] += 1
         FLOPS += 1
 
-    return int(FLOPS)
+    return int(FLOPS), counts
