@@ -12,8 +12,8 @@ def scpobaf_flops(n_diagonals, n_offdiags, arrowhead_blocksize):
         'dot_product_ns': 0,
         'matrix_vector_nsns': 0,
         'matrix_vector_nsnb': 0,
-        'DGEMM_nb3': 0,
-        'GER_nb2': 0,
+        'dgemm_nb3': 0,
+        'ger_nb2': 0,
         'cholesky_nb': 0,
     }
 
@@ -46,7 +46,7 @@ def scpobaf_flops(n_diagonals, n_offdiags, arrowhead_blocksize):
 
         # A_{ndb+1, ndb+1} = A_{ndb+1, ndb+1} - L_{ndb+1, i} @ L_{ndb+1,
         # i}.conj().T
-        counts['GER_nb2'] += 1
+        counts['ger_nb2'] += 1
         FLOPS += 2 * arrowhead_blocksize**2  # outer product
 
         # Update next diagonal
@@ -65,7 +65,7 @@ def scpobaf_flops(n_diagonals, n_offdiags, arrowhead_blocksize):
     FLOPS += arrowhead_blocksize  # vector scaling nb
 
     # A_{ndb+1, ndb+1} = A_{ndb+1, ndb+1} - L_{ndb+1, ndb} @ L_{ndb+1, ndb}^{T}
-    counts['GER_nb2'] += 1
+    counts['ger_nb2'] += 1
     FLOPS += 2 * arrowhead_blocksize**2  # outer product, one mult one add
 
     # L_{ndb+1, ndb+1} = chol(A_{ndb+1, ndb+1})

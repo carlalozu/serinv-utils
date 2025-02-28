@@ -3,7 +3,7 @@ def scpobasi_flops(n_diagonals, n_offdiags, arrowhead_blocksize):
 
     FLOPS = 0
     counts = {
-        'triangular_solve_nb3': 0,
+        'triang_solve_nb3': 0,
         'vector_scaling_ns': 0,
         'vector_scaling_nb': 0,
         'mult': 0,
@@ -13,7 +13,7 @@ def scpobasi_flops(n_diagonals, n_offdiags, arrowhead_blocksize):
         'matrix_vector_nsns': 0,
         'matrix_vector_nsnb': 0,
         'matrix_vector_nbnb': 0,
-        'DGEMM_nb3': 0,
+        'dgemm_nb3': 0,
     }
 
     # Arrowhead inversion first
@@ -21,7 +21,7 @@ def scpobasi_flops(n_diagonals, n_offdiags, arrowhead_blocksize):
     FLOPS += 1
 
     # X_{ndb+1, ndb+1}
-    counts['DGEMM_nb3'] += 1
+    counts['dgemm_nb3'] += 1
     FLOPS += 2 * arrowhead_blocksize**3
 
     # X_{ndb+1,ndb}

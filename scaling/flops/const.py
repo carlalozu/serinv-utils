@@ -1,3 +1,8 @@
+BENCHMARKED_OPS = [
+    'cholesky_ns3', 'triang_solve_ns3', 'triang_solve_ns2nb', 'dgemm_ns3', 'dgemm_ns2nb',
+    'dgemm_nb2ns', 'dgemm_nsnb2', 'matrix_vector_nsns', 'matrix_vector_nsnb',
+    'matrix_vector_nbns', 'dot_prod_ns', 'scale_ns'
+]
 
 OPERATIONS_FLOPS = {
     'cholesky_ns3': {
