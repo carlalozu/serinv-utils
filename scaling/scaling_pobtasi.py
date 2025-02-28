@@ -103,39 +103,39 @@ def main():
 
     # print("n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,pobtaf_time,pobtasi_time,pobtaf_FLOPS,pobtasi_FLOPS")
 
-    print(parameters['parameters']['matrix_size'], end=',')
-    print(parameters['parameters']['bandwidth'], end=',')
-    print(parameters['parameters']['arrowhead_blocksize'], end=',')
+    print(parameters['parameters']['m'], end=',')
+    print(parameters['parameters']['b'], end=',')
+    print(parameters['parameters']['nb'], end=',')
 
     if not parameters['flag']:
         print('NA,NA,NA,NA,NA,NA,NA')
 
     else:
         print(parameters['parameters']['effective_bandwidth'], end=',')
-        print(parameters['parameters']['diagonal_blocksize'], end=',')
-        print(parameters['parameters']['n_offdiags'], end=',')
-        print(parameters['parameters']['n_t'], end=',')
+        print(parameters['parameters']['ns'], end=',')
+        print(parameters['parameters']['n'], end=',')
+        print(parameters['parameters']['nt'], end=',')
 
         out = run_pobtasi(
-            diagonal_blocksize=parameters['parameters']['diagonal_blocksize'],
-            arrowhead_blocksize=parameters['parameters']['arrowhead_blocksize'],
-            n_t=parameters['parameters']['n_t'],
+            diagonal_blocksize=parameters['parameters']['ns'],
+            arrowhead_blocksize=parameters['parameters']['nb'],
+            n_t=parameters['parameters']['nt'],
             dtype=dtype,
         )
         print(out, end=',')
 
         # GET FLOPS
         flops_c, _ = T_flops_POBTAF(
-            nt=parameters['parameters']['n_t'],
-            ns=parameters['parameters']['diagonal_blocksize'],
-            nb=parameters['parameters']['arrowhead_blocksize']
+            nt=parameters['parameters']['nt'],
+            ns=parameters['parameters']['ns'],
+            nb=parameters['parameters']['nb']
         )
         print(flops_c, end=',')
 
         flops_si, _ = T_flops_POBTASI(
-            nt=parameters['parameters']['n_t'],
-            ns=parameters['parameters']['diagonal_blocksize'],
-            nb=parameters['parameters']['arrowhead_blocksize']
+            nt=parameters['parameters']['nt'],
+            ns=parameters['parameters']['ns'],
+            nb=parameters['parameters']['nb']
         )
         print(flops_si)
 

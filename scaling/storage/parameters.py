@@ -1,31 +1,31 @@
-def calculate_parameters_banded(matrix_size: int, bandwidth: int, arrowhead_width: int):
+def calculate_parameters_banded(m: int, b: int, nb: int):
 
     parameters = {
-        "matrix_size": matrix_size,
-        "arrowhead_blocksize": arrowhead_width,
-        "bandwidth": bandwidth
+        "m": m,
+        "b": b,
+        "nb": nb,
     }
 
     try:
-        assert bandwidth % 2 == 1,  "Bandwidth must be odd"
+        assert b % 2 == 1,  "bandwidth must be odd"
 
-        diagonal_blocksize_ = 1
-        n_offdiags_ = int((bandwidth - 1)/2)
+        ns_ = int((b - 1)/2)
+        n_ = 1
 
-        effective_bandwidth_ = diagonal_blocksize_*(n_offdiags_*2+1)
-        parameters["effective_bandwidth"] = effective_bandwidth_
+        effective_b_ = ns_*(n_*2+1)
+        parameters["effective_b"] = effective_b_
 
-        assert bandwidth <= effective_bandwidth_, "Effective bandwidth is smaller than bandwidth"
+        assert b <= effective_b_, "Effective bandwidth is smaller than bandwidth"
 
-        n_t_ = matrix_size - arrowhead_width
-        parameters["n_t"] = n_t_
+        nt_ = m - nb
+        parameters["nt"] = nt_
 
-        matrix_size_ = n_t_*diagonal_blocksize_ + arrowhead_width
+        m_ = nt_ + nb
 
-        parameters["diagonal_blocksize"] = diagonal_blocksize_
-        parameters["n_offdiags"] = n_offdiags_
+        parameters["ns"] = ns_
+        parameters["n"] = n_
 
-        assert matrix_size_ == matrix_size, "Matrix size must be kept"
+        assert m_ == m, "Matrix size must be kept"
 
         return {
             'parameters': parameters,
@@ -39,41 +39,41 @@ def calculate_parameters_banded(matrix_size: int, bandwidth: int, arrowhead_widt
         }
 
 
-def calculate_parameters_tri_diagonal(matrix_size: int, bandwidth: int, arrowhead_width: int):
+def calculate_parameters_tri_diagonal(m: int, b: int, nb: int):
 
     parameters = {
-        "matrix_size": matrix_size,
-        "arrowhead_blocksize": arrowhead_width,
-        "bandwidth": bandwidth
+        "m": m,
+        "b": b,
+        "nb": nb,
     }
 
     try:
-        assert bandwidth % 2 == 1,  "Bandwidth must be odd"
+        assert b % 2 == 1,  "bandwidth must be odd"
 
-        n_offdiags_ = 1
-        inner_matrix_size = matrix_size - arrowhead_width
+        n_ = 1
+        inner_m = m - nb
 
-        diagonal_blocksize_ = int((bandwidth-1)/2)
-        n_t_ = inner_matrix_size//diagonal_blocksize_
+        ns_ = int((b-1)/2)
+        nt_ = inner_m//ns_
 
         iters = 0
-        while inner_matrix_size % diagonal_blocksize_:
-            diagonal_blocksize_ += 1
-            n_t_ = inner_matrix_size//diagonal_blocksize_
+        while inner_m % ns_:
+            ns_ += 1
+            nt_ = inner_m//ns_
             iters += 1
 
-        parameters["n_t"] = n_t_
-        assert n_t_ > 1, "Matrix not divisible, might be prime"
+        parameters["nt"] = nt_
+        assert nt_ > 1, "Matrix not divisible, might be prime"
 
-        effective_bandwidth_ = diagonal_blocksize_*2+1
-        parameters["effective_bandwidth"] = effective_bandwidth_
-        assert bandwidth <= effective_bandwidth_, "Effective bandwidth is smaller than bandwidth"
+        effective_b_ = ns_*(n_*2)+1
+        parameters["effective_b"] = effective_b_
+        assert b <= effective_b_, "Effective b is smaller than b"
 
-        parameters["diagonal_blocksize"] = diagonal_blocksize_
-        parameters["n_offdiags"] = n_offdiags_
+        parameters["ns"] = ns_
+        parameters["n"] = n_
 
-        matrix_size_ = n_t_*diagonal_blocksize_ + arrowhead_width
-        assert matrix_size_ == matrix_size, "Matrix size must be kept"
+        m_ = nt_*ns_ + nb
+        assert m_ == m, "Matrix size must be kept"
 
         return {
             'parameters': parameters,
@@ -87,43 +87,42 @@ def calculate_parameters_tri_diagonal(matrix_size: int, bandwidth: int, arrowhea
         }
 
 
-def calculate_parameters_n_diagonal(matrix_size: int, bandwidth: int, arrowhead_width: int, n_offdiags_: int = 1):
+def calculate_parameters_n_diagonal(m: int, b: int, nb: int, n_: int = 1):
 
     parameters = {
-        "matrix_size": matrix_size,
-        "arrowhead_blocksize": arrowhead_width,
-        "bandwidth": bandwidth
+        "m": m,
+        "nb": nb,
+        "b": b
     }
     try:
-        assert bandwidth % 2 == 1,  "Bandwidth must be odd"
+        assert b % 2 == 1,  "b must be odd"
 
-        inner_matrix_size = matrix_size - arrowhead_width
+        inner_m = m - nb
 
-        diagonal_blocksize_ = int(
-            (bandwidth-1+2*n_offdiags_-1)/(2*n_offdiags_))
-        n_t_ = inner_matrix_size//diagonal_blocksize_
+        ns_ = int((b-1+2*n_-1)/(2*n_))
+        nt_ = inner_m//ns_
 
         iters = 0
-        while inner_matrix_size % diagonal_blocksize_:
-            diagonal_blocksize_ += 1
-            n_t_ = inner_matrix_size//diagonal_blocksize_
+        while inner_m % ns_:
+            ns_ += 1
+            nt_ = inner_m//ns_
             iters += 1
 
-        parameters["n_t"] = n_t_
-        assert n_t_ > 1, "Matrix not divisible, might be prime"
+        parameters["nt"] = nt_
+        assert nt_ > 1, "Matrix not divisible, might be prime"
 
-        matrix_size_ = n_t_*diagonal_blocksize_ + arrowhead_width
+        m_ = nt_*ns_ + nb
 
-        parameters["diagonal_blocksize"] = diagonal_blocksize_
-        parameters["n_offdiags"] = n_offdiags_
+        parameters["ns"] = ns_
+        parameters["n"] = n_
 
-        assert matrix_size_ == matrix_size, "Matrix size must be kept"
+        assert m_ == m, "Matrix size must be kept"
 
-        effective_bandwidth_ = diagonal_blocksize_*n_offdiags_*2+1
-        parameters["effective_bandwidth"] = effective_bandwidth_
-        assert bandwidth <= effective_bandwidth_, "Effective bandwidth is smaller than bandwidth"
-        if bandwidth <= (diagonal_blocksize_*(n_offdiags_-1)*2+1):
-            raise AssertionError('Extra block is being used for bandwidth')
+        effective_b_ = ns_*n_*2+1
+        parameters["effective_b"] = effective_b_
+        assert b <= effective_b_, "Effective b is smaller than b"
+        if b <= (ns_*(n_-1)*2+1):
+            raise AssertionError('Extra block is being used for b')
 
         return {
             'parameters': parameters,
