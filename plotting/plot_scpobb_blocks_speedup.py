@@ -1,16 +1,15 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
 from const import PLT_PARAMS
-import sys
 
 plt.style.use("seaborn-v0_8-colorblind")
 plt.rcParams.update(PLT_PARAMS)
 
 lims = {
-    'alex':(16,4096),
-    'fritz':(16,2048),
+    'alex': (16, 4096),
+    'fritz': (16, 2048),
 }
+
 
 def main(filename, filename_ref, imgname, cluster):
     data_scpobbaf = pd.read_csv(filename)
@@ -18,22 +17,22 @@ def main(filename, filename_ref, imgname, cluster):
 
     plt.figure(figsize=(8, 6))
     for i in sorted(data_scpobbaf['id'].unique())[::-1]:
-        data = data_scpobbaf[data_scpobbaf['id']==i]
-        time_ref = data_pobtaf[data_pobtaf['id']==i][f'pobta{alg}_time'].mean()
+        data = data_scpobbaf[data_scpobbaf['id'] == i]
+        time_ref = data_pobtaf[data_pobtaf['id']
+                               == i][f'pobta{alg}_time'].mean()
 
         bandwidth = list(data['bandwidth'])[0]
-        arrowhead = list(data['arrowhead_blocksize'])[0]
-        matrix_size = list(data['n'])[0]
 
         grouped_data = data.groupby('diagonal_blocksize').mean().reset_index()
 
         # Scaling
-        grouped_data[f'scpobba{alg}_speedup'] = time_ref/grouped_data[f'scpobba{alg}_time']
+        grouped_data[f'scpobba{alg}_speedup'] = time_ref / \
+            grouped_data[f'scpobba{alg}_time']
 
         # Plot mean times with error bars
         plt.errorbar(
-            grouped_data['diagonal_blocksize'], 
-            grouped_data[f'scpobba{alg}_speedup'], 
+            grouped_data['diagonal_blocksize'],
+            grouped_data[f'scpobba{alg}_speedup'],
             label=f'$b$={int(bandwidth)}',
             marker='o',
             linestyle='-',
@@ -59,13 +58,14 @@ def main(filename, filename_ref, imgname, cluster):
     plt.tight_layout()
     plt.savefig(imgname, dpi=300)
 
+
 if __name__ == "__main__":
 
     arrow = 64
-    for cluster in ['alex']: #, 'alex']:
+    for cluster in ['fritz', 'alex']:  # , 'alex']:
         for alg in ['f', 'si']:
             # f=cholesky, si=selected inversion
-    
+
             filename = f"../jobs/{cluster}/results/scpobbasi_blocks_{arrow}.txt"
             filename_ref = f'../jobs/{cluster}/results/pobtasi_{arrow}.txt'
             imgname = f"../jobs/{cluster}/images/scpobba{alg}_blocks_{arrow}_speedup.pdf"
