@@ -8,7 +8,7 @@ def scpobbasi_flops(n_diag_blocks, diagonal_blocksize, arrowhead_blocksize, n_of
         'triang_solve_nb3': 0,
         'dgemm_ns3': 0,
         'dgemm_ns2nb': 0,
-        'dgemm_nb2ns': 0,
+        'dgemm_nsnb2': 0,
         'dgemm_nb3': 0
     }
 
@@ -22,11 +22,10 @@ def scpobbasi_flops(n_diag_blocks, diagonal_blocksize, arrowhead_blocksize, n_of
     FLOPS += diagonal_blocksize**3
 
     # X_{ndb+1, ndb} = -X_{ndb+1, ndb+1} L_{ndb+1, ndb} L_{ndb, ndb}^{-1}
-    counts['dgemm_nb2ns'] += 1
+    counts['dgemm_nsnb2'] += 1
     FLOPS += 2 * arrowhead_blocksize**2 * diagonal_blocksize
     counts['dgemm_ns2nb'] += 1
     FLOPS += 2 * arrowhead_blocksize * diagonal_blocksize**2
-
 
     # X_{ndb, ndb} = (L_{ndb, ndb}^{-T} - X_{ndb+1, ndb}^{T} L_{ndb+1, ndb}) L_{ndb, ndb}^{-1}
     counts['dgemm_ns2nb'] += 1
@@ -42,7 +41,7 @@ def scpobbasi_flops(n_diag_blocks, diagonal_blocksize, arrowhead_blocksize, n_of
 
         # Arrowhead part
         # X_{ndb+1, i} = - X_{ndb+1, ndb+1} L_{ndb+1, i}
-        counts['dgemm_nb2ns'] += 1
+        counts['dgemm_nsnb2'] += 1
         FLOPS += 2 * arrowhead_blocksize**2 * diagonal_blocksize
 
         for k in range(i + 1, min(i + n_offdiags_blk + 1, n_diag_blocks), 1):

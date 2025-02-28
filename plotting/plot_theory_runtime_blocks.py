@@ -20,7 +20,7 @@ lims = {
 }
 
 NB: int = 64
-M: int = 65600
+M: int = 2**16+NB
 
 
 def main(filename, filename_alg, imgname, routine, cluster):
@@ -40,14 +40,14 @@ def main(filename, filename_alg, imgname, routine, cluster):
         for n in sorted(data_rou_['n_offdiags'].unique()):
             p = calculate_parameters_n_diagonal(M, b, NB, n)['parameters']
 
-            print(       
-                'b', b,         
+            print(
+                'b', b,
                 'n_t', p['n_t'],
                 'diagonal_blocksize', p['diagonal_blocksize'],
                 'arrowhead_blocksize', p['arrowhead_blocksize'],
                 'n_offdiags', int(p['n_offdiags']),
             )
-            if routine == 'POBASI':
+            if routine == 'POBBASI':
                 count_alg = scpobbasi_flops
             else:
                 count_alg = scpobbaf_flops
@@ -59,7 +59,7 @@ def main(filename, filename_alg, imgname, routine, cluster):
                 int(p['n_offdiags']),
             )
 
-            if p['diagonal_blocksize']<16:
+            if p['diagonal_blocksize'] < 16:
                 times.append(0)
                 continue
 
@@ -67,10 +67,12 @@ def main(filename, filename_alg, imgname, routine, cluster):
             for alg_ in ALG_OPERATION_COUNT[routine]:
 
                 counts_ = counts[alg_]
+                # counts_ = ALG_OPERATION_COUNT[routine][alg_](p['n_t'], p['n_offdiags'])
 
                 if alg_ in BENCHMARKED_OPS:
 
-                    alg_df = operations_df.loc[operations_df['diag_blocksize'] == p['diagonal_blocksize']].copy()
+                    alg_df = operations_df.loc[operations_df['diag_blocksize']
+                                               == p['diagonal_blocksize']].copy()
 
                     alg_df['time'] = alg_df[alg_]/alg_df['repetitions']
 
@@ -86,7 +88,8 @@ def main(filename, filename_alg, imgname, routine, cluster):
                     if alg_ns_ in BENCHMARKED_OPS:
                         print('adding', alg_ns_, 'with', NB)
 
-                        alg_df = operations_df.loc[operations_df['diag_blocksize'] == NB].copy()
+                        alg_df = operations_df.loc[operations_df['diag_blocksize'] == NB].copy(
+                        )
                         alg_df['time'] = alg_df[alg_ns_]/alg_df['repetitions']
                         t = alg_df['time']*counts_
                         routine_time += t.item()
@@ -99,20 +102,18 @@ def main(filename, filename_alg, imgname, routine, cluster):
         plt.plot(
             data_rou_b['diagonal_blocksize'],
             data_rou_b['time'],
-            label=f'{b}',
+            label=f'{int(b)}',
             marker='o',
         )
 
-
     plt.grid(True, which="both", ls="-", alpha=0.2)
     plt.legend(loc='best', frameon=True, shadow=True)
-
 
     plt.xscale('log', base=2)
     plt.xticks(operations_df['diag_blocksize'], [str(int(tick))
                for tick in operations_df['diag_blocksize']])
     plt.xlim(*lims[f'{routine}_{cluster}'])
-    
+
     plt.ylabel('Runtime (secs)')
     plt.xlabel('$n_s$')
 
@@ -127,7 +128,7 @@ if __name__ == "__main__":
 
     for cluster in ['fritz', 'alex']:  # , 'fritz', alex
         # ['POBAF', 'POBASI', 'POBBAF', 'POBBASI',]:
-        for routine in ['POBBAF']:
+        for routine in ['POBBASI']:
             filename = f"../jobs/{cluster}/results/operations.txt"
             filename_rou = f"../jobs/{cluster}/results/sc{routine.lower()}_64_df.txt"
             imgname = f"../jobs/{cluster}/images/operations_{routine}_theory.pdf"

@@ -19,11 +19,12 @@ def main(filename, filename_ref, imgname, cluster):
     for i in sorted(data_scpobbaf['id'].unique())[::-1]:
         data = data_scpobbaf[data_scpobbaf['id'] == i]
         time_ref = data_pobtaf[data_pobtaf['id']
-                               == i][f'pobta{alg}_time'].mean()
+                               == i][f'pobta{alg}_time'].median()
 
         bandwidth = list(data['bandwidth'])[0]
 
-        grouped_data = data.groupby('diagonal_blocksize').mean().reset_index()
+        grouped_data = data.groupby(
+            'diagonal_blocksize').median().reset_index()
 
         # Scaling
         grouped_data[f'scpobba{alg}_speedup'] = time_ref / \
