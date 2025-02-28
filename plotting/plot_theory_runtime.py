@@ -10,10 +10,6 @@ plt.rcParams.update(PLT_PARAMS)
 
 
 lims = {
-    'POBBAF_alex': (16, 4096),
-    'POBBAF_fritz': (16, 2048),
-    'POBBASI_alex': (16, 4096),
-    'POBBASI_fritz': (16, 2048),
     'POBAF_alex': (256, 2048),
     'POBAF_fritz': (256, 2048),
     'POBASI_alex': (256, 2048),
