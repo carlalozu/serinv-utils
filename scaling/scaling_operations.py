@@ -29,9 +29,9 @@ def spd(m, factor):
     m[:, :] = (m[:, :] + m[:, :].conj())/2
 
 
-def run_operations(diag_blocksize, arrowhead_blocksize, repetitions, dtype):
+def run_operations(diag_blocksize, arrowhead_blocksize, n_runs, dtype):
 
-    print(repetitions, end=',')
+    print(n_runs, end=',')
 
     block_ns_ns = xp.zeros(
         (diag_blocksize, diag_blocksize),
@@ -85,7 +85,7 @@ def run_operations(diag_blocksize, arrowhead_blocksize, repetitions, dtype):
     # Do Cholesky
     def cholesky_op():
         block_ns_ns_out[:, :] = cholesky(block_ns_ns)
-    time_taken = Timer(cholesky_op).timeit(number=repetitions)
+    time_taken = Timer(cholesky_op).timeit(number=n_runs)
     print(time_taken, end=',')
 
     # Do triangular solve ns^3
@@ -93,7 +93,7 @@ def run_operations(diag_blocksize, arrowhead_blocksize, repetitions, dtype):
         block_ns_ns_out[:, :] = la.solve_triangular(
             block_ns_ns, block_ns_ns.T, lower=True
         ).T
-    time_taken = Timer(triangular_solve_ns3).timeit(number=repetitions)
+    time_taken = Timer(triangular_solve_ns3).timeit(number=n_runs)
     print(time_taken, end=',')
 
     # Do triangular solve ns^2nb
@@ -101,61 +101,61 @@ def run_operations(diag_blocksize, arrowhead_blocksize, repetitions, dtype):
         block_nb_ns_out[:, :] = la.solve_triangular(
             block_ns_ns, block_nb_ns.T, lower=True
         ).T
-    time_taken = Timer(triangular_solve_ns2nb).timeit(number=repetitions)
+    time_taken = Timer(triangular_solve_ns2nb).timeit(number=n_runs)
     print(time_taken, end=',')
 
     # Do DGEMM_ns^3
     def dgemm_ns3():
         block_ns_ns_out[:, :] = block_ns_ns.T @ block_ns_ns
-    time_taken = Timer(dgemm_ns3).timeit(number=repetitions)
+    time_taken = Timer(dgemm_ns3).timeit(number=n_runs)
     print(time_taken, end=',')
 
     # Do DGEMM_ns^2nb
     def dgemm_ns2nb():
         block_nb_ns_out[:, :] = block_nb_ns @ block_ns_ns.T
-    time_taken = Timer(dgemm_ns2nb).timeit(number=repetitions)
+    time_taken = Timer(dgemm_ns2nb).timeit(number=n_runs)
     print(time_taken, end=',')
 
     # Do DGEMM_nb^2ns
     def dgemm_nb2ns():
         block_nb_nb_out[:, :] = block_nb_ns @ block_nb_ns.T
-    time_taken = Timer(dgemm_nb2ns).timeit(number=repetitions)
+    time_taken = Timer(dgemm_nb2ns).timeit(number=n_runs)
     print(time_taken, end=',')
 
     # Do DGEMM_nsnb^2
     def dgemm_nsnb2():
         block_nb_ns_out[:, :] = block_nb_nb @ block_nb_ns
-    time_taken = Timer(dgemm_nsnb2).timeit(number=repetitions)
+    time_taken = Timer(dgemm_nsnb2).timeit(number=n_runs)
     print(time_taken, end=',')
 
     # Do DGEMV_ns^2
     def dgemv_ns2():
         vector_ns_out[:] = block_ns_ns @ vector_ns
-    time_taken = Timer(dgemv_ns2).timeit(number=repetitions)
+    time_taken = Timer(dgemv_ns2).timeit(number=n_runs)
     print(time_taken, end=',')
 
     # Do DGEMV_nsnb
     def dgemv_nsnb():
         vector_ns_out[:] = block_nb_ns.T @ vector_nb
-    time_taken = Timer(dgemv_nsnb).timeit(number=repetitions)
+    time_taken = Timer(dgemv_nsnb).timeit(number=n_runs)
     print(time_taken, end=',')
 
     # Do DGEMV_nbns
     def dgemv_nbns():
         vector_nb_out[:] = block_nb_ns @ vector_ns
-    time_taken = Timer(dgemv_nbns).timeit(number=repetitions)
+    time_taken = Timer(dgemv_nbns).timeit(number=n_runs)
     print(time_taken, end=',')
 
     # Do ns \cdot ns
     def ns_dot_ns():
         element_out[0] = vector_ns.T @ vector_ns
-    time_taken = Timer(ns_dot_ns).timeit(number=repetitions)
+    time_taken = Timer(ns_dot_ns).timeit(number=n_runs)
     print(time_taken, end=',')
 
     # Do scale ns
     def scale_ns():
         vector_ns_out[:] = vector_ns.T * element[0]
-    time_taken = Timer(scale_ns).timeit(number=repetitions)
+    time_taken = Timer(scale_ns).timeit(number=n_runs)
     print(time_taken)
 
 
@@ -166,8 +166,8 @@ def main():
                         help="Diagonal block width.")
     parser.add_argument('--arrowhead_blocksize', type=int, required=True,
                         help="Arrowhead block width.")
-    parser.add_argument('--repetitions', type=int, required=True,
-                        help="repetitions for the algorithms.")
+    parser.add_argument('--n_runs', type=int, required=True,
+                        help="n_runs for the algorithms.")
 
     # Parse arguments
     args = parser.parse_args()
@@ -179,7 +179,7 @@ def main():
     run_operations(
         diag_blocksize=args.diag_blocksize,
         arrowhead_blocksize=args.arrowhead_blocksize,
-        repetitions=args.repetitions,
+        n_runs=args.n_runs,
         dtype=dtype,
     )
 

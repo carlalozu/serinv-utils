@@ -3,7 +3,7 @@ import time
 
 from serinv.algs.work_in_progress.scpobbaf import scpobbaf_c
 from serinv.algs.work_in_progress.scpobbasi import scpobbasi_c
-from storage.utils_bba import dd_bba, bba_arrays_to_dense, bba_dense_to_arrays
+from storage.utils_bba import dd_bba, fill_bba
 from storage.parameters import calculate_parameters_n_diagonal
 from flops.scpobbaf_flops import scpobbaf_flops
 from flops.scpobbasi_flops import scpobbasi_flops
@@ -28,23 +28,12 @@ except ImportError:
 
 
 def run_scpobbasi(
-        n_offdiags_blk, diagonal_blocksize, arrowhead_blocksize, n_diag_blocks,
-        dtype, overwrite=False):
-    out = ""
-
-    # Create matrix in compressed format
-    (
-        M_diagonal_blocks,
-        M_lower_diagonal_blocks,
-        M_arrow_bottom_blocks,
-        M_arrow_tip_block
-    ) = dd_bba(
-        n_offdiags_blk,
-        diagonal_blocksize,
-        arrowhead_blocksize,
-        n_diag_blocks,
-        dtype,
-    )
+    M_diagonal_blocks,
+    M_lower_diagonal_blocks,
+    M_arrow_bottom_blocks,
+    M_arrow_tip_block,
+    overwrite=True
+):
 
     start_time = time.time()
     (
@@ -60,7 +49,7 @@ def run_scpobbasi(
         overwrite,
     )
     end_time = time.time()
-    out += f"{end_time - start_time},"
+    time_c = end_time - start_time
 
     # Do inversion on compressed format
     start_time = time.time()
@@ -77,9 +66,9 @@ def run_scpobbasi(
         overwrite,
     )
     end_time = time.time()
-    out += f"{end_time - start_time}"
+    time_in = end_time - start_time
 
-    return out
+    return time_c, time_in
 
 
 def main():
@@ -95,6 +84,8 @@ def main():
                         help="Number of lower off-diagonal blocks.")
     parser.add_argument('--overwrite', type=int, required=False, default=1,
                         help="Overwrite the original arrays.")
+    parser.add_argument('--n_runs', type=int, required=False, default=1,
+                        help="Number of runs.")
 
     # Parse arguments
     args = parser.parse_args()
@@ -113,6 +104,7 @@ def main():
 
     # print("n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time,numpy_time,error")
 
+    print(args.n_runs, end=',')
     print(parameters['parameters']['matrix_size'], end=',')
     print(parameters['parameters']['bandwidth'], end=',')
     print(parameters['parameters']['arrowhead_blocksize'], end=',')
@@ -126,16 +118,43 @@ def main():
         print(parameters['parameters']['n_offdiags'], end=',')
         print(parameters['parameters']['n_t'], end=',')
 
-        out = run_scpobbasi(
-            n_offdiags_blk=parameters['parameters']['n_offdiags'],
-            diagonal_blocksize=parameters['parameters']['diagonal_blocksize'],
-            arrowhead_blocksize=parameters['parameters']['arrowhead_blocksize'],
-            n_diag_blocks=parameters['parameters']['n_t'],
+        (
+            M_diagonal_blocks,
+            M_lower_diagonal_blocks,
+            M_arrow_bottom_blocks,
+            M_arrow_tip_block,
+        ) = dd_bba(
+            parameters['parameters']['n_offdiags'],
+            parameters['parameters']['diagonal_blocksize'],
+            parameters['parameters']['arrowhead_blocksize'],
+            n_t=parameters['parameters']['n_t'],
             dtype=dtype,
-            overwrite=overwrite,
         )
-        # GET FLOPS
-        print(out, end=',')
+
+        time_c = 0
+        time_in = 0
+        for _ in range(args.n_runs):
+
+            times = run_scpobbasi(
+                M_diagonal_blocks,
+                M_lower_diagonal_blocks,
+                M_arrow_bottom_blocks,
+                M_arrow_tip_block,
+                overwrite
+            )
+            time_c += times[0]
+            time_in += times[1]
+
+            fill_bba(
+                M_diagonal_blocks,
+                M_lower_diagonal_blocks,
+                M_arrow_bottom_blocks,
+                M_arrow_tip_block,
+                factor=int(np.sqrt(parameters['parameters']['n_t']))
+            )
+
+        print(time_c, end=',')
+        print(time_in, end=',')
 
         flops_c, _ = scpobbaf_flops(
             n_diag_blocks=parameters['parameters']['n_t'],

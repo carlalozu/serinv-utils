@@ -38,6 +38,3 @@ for ((j=i-7; j<i-2; j++)) do
     python ../../scaling/scaling_scpobasi.py --n=$n --bandwidth=$bandwidth --arrowhead_blocksize=$arrowhead_blocksize --overwrite=$overwrite --n_runs=$n_runs|  tee -a results/$output_file
 
 done
-
-
-# python plot.py

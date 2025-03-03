@@ -26,7 +26,7 @@ output_file=scpobbasi_blocks_$arrowhead_blocksize.txt
 # Create output files
 > results/$output_file
 
-echo "run,id,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,scpobbaf_time,scpobbasi_time,scpobbaf_FLOPS,scpobbasi_FLOPS"  | tee -a results/$output_file
+echo "id,n_runs,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,scpobbaf_time,scpobbasi_time,scpobbaf_FLOPS,scpobbasi_FLOPS"  | tee -a results/$output_file
 
 
 for ((j=i-7; j<i-2; j++)) do
@@ -42,9 +42,8 @@ for ((j=i-7; j<i-2; j++)) do
         n_offdiags_blk=$((2**k))
 
         echo "Running $script with matrix size $n, bandwidth $bandwidth, j $j, diagonal_blocksize $diagonal_blocksize"
-        for ((r=0; r<n_runs; r++)) do
-            echo -n "$r,$j," | tee -a results/$output_file
-            python ../../scaling/$script --n=$n --bandwidth=$bandwidth --arrowhead_blocksize=$arrowhead_blocksize --n_offdiags_blk=$n_offdiags_blk --overwrite=$overwrite| tee -a results/$output_file
+        echo -n "$j," | tee -a results/$output_file
+        python ../../scaling/$script --n=$n --bandwidth=$bandwidth --arrowhead_blocksize=$arrowhead_blocksize --n_offdiags_blk=$n_offdiags_blk --overwrite=$overwrite --n_runs=$n_runs| tee -a results/$output_file
         done
 
     done
