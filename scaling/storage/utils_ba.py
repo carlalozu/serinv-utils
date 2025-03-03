@@ -158,3 +158,42 @@ def ba_arrays_to_dense(
         M -= np.diag(np.diag(M))/2
 
     return M
+
+
+def fill_ba(
+    A_diagonal: ArrayLike,
+    A_lower_diagonals: ArrayLike,
+    A_arrow_bottom: ArrayLike,
+    A_arrow_tip: ArrayLike,
+    factor: float = 2,
+):
+    """Returns a random, diagonaly dominant general, banded arrowhead matrix in
+    compressed format."""
+
+    arrowhead_size = A_arrow_bottom.shape[0]
+    n = A_diagonal.shape[0]
+    n_offdiags = A_lower_diagonals.shape[0]
+
+    rc = (1.0 + 1.0j) if A_diagonal.dtype == np.complex128 else 1.0
+
+    # Fill with random values
+    A_diagonal[:] = (rc * xp.random.rand(*A_diagonal.shape)+1)/2
+    A_lower_diagonals[:, :] = (
+        rc * xp.random.rand(*A_lower_diagonals.shape)+1)/2
+    A_arrow_bottom[:, :] = (rc * xp.random.rand(*A_arrow_bottom.shape)+1)/2
+    A_arrow_tip[:, :] = (rc * xp.random.rand(*A_arrow_tip.shape)+1)/2
+
+    # Make diagonally dominant
+    for i in range(n):
+        A_diagonal[i] = (1 + xp.sum(A_arrow_bottom[:, i]))*factor
+    A_diagonal[:] = (A_diagonal[:] + A_diagonal[:].conj())/2
+
+    for i in range(arrowhead_size):
+        A_arrow_tip[i, i] = (1 + xp.sum(A_arrow_bottom[:, i]))*factor
+
+    # Remove extra info
+    A_lower_diagonals[-n_offdiags:, -n_offdiags:] = np.fliplr(
+        np.triu(np.fliplr(A_lower_diagonals[-n_offdiags:, -n_offdiags:])))
+
+    A_arrow_tip[:, :] = np.tril(
+        A_arrow_tip[:, :] + A_arrow_tip[:, :].conj().T)/2

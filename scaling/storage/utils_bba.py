@@ -30,7 +30,6 @@ except ImportError:
     CUPY_AVAIL = False
 
 
-
 def spd(M_, factor_=2):
     """Makes dense matrix symmetric positive definite."""
 
@@ -108,10 +107,10 @@ def bba_dense_to_arrays(
     M, n_offdiags_blk, diag_blocksize, arrow_blocksize, lower=True
 ):
     """
-    Compress a square matrix with banded and arrowhead structure 
+    Compress a square matrix with banded and arrowhead structure
     into a more efficient representation.
     The function handles matrices that have:
-    1. Block banded diagonal structure 
+    1. Block banded diagonal structure
     2. Arrowhead pattern in the last few rows and columns
     """
 
@@ -177,7 +176,7 @@ def bba_arrays_to_dense(
     M_arrow_tip_block,
     symmetric=False
 ):
-    """Decompress a square matrix with banded and arrowhead structure into 
+    """Decompress a square matrix with banded and arrowhead structure into
     dense format.
     """
     xp = cp if CUPY_AVAIL else np
@@ -216,3 +215,40 @@ def bba_arrays_to_dense(
     if symmetric:
         return (M + M.conj().T) - xp.diag(xp.diag(M))
     return M
+
+
+def fill_bba(
+    A_diagonal_blocks,
+    A_lower_diagonal_blocks,
+    A_arrow_bottom_blocks,
+    A_arrow_tip_block,
+    factor=2
+):
+    xp = cp if CUPY_AVAIL else np
+
+    rc = (1.0 + 1.0j) if A_diagonal_blocks.dtype == np.complex128 else 1.0
+
+    n_t, diag_blocksize, _ = A_arrow_bottom_blocks.shape
+
+    n_offdiags_blk = A_lower_diagonal_blocks.shape[1]//diag_blocksize
+
+    A_diagonal_blocks[:, :, :] = (
+        rc * xp.random.rand(*A_diagonal_blocks.shape)+1)/2
+    A_lower_diagonal_blocks[:, :, :] = (
+        rc * xp.random.rand(*A_lower_diagonal_blocks.shape)+1)/2
+    A_arrow_bottom_blocks[:, :, :] = (
+        rc * xp.random.rand(*A_arrow_bottom_blocks.shape)+1)/2
+    A_arrow_tip_block[:, :] = (
+        rc * xp.random.rand(*A_arrow_tip_block.shape)+1)/2
+
+    # Make main diagonal symmetric
+    for i in range(n_t):
+        A_diagonal_blocks[i, :, :] = spd(
+            A_diagonal_blocks[i, :, :], factor_=factor)
+
+    A_arrow_tip_block[:, :] = spd(
+        A_arrow_tip_block[:, :], factor_=factor)
+
+    # Remove extra info from
+    for i in range(1, n_offdiags_blk):
+        A_lower_diagonal_blocks[n_t-1-i:, i*diag_blocksize:, :] = 0.0
