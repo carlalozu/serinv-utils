@@ -5,7 +5,7 @@ import numpy as np
 import scipy.linalg as np_la
 
 from serinv.algs import pobtaf, pobtasi
-from storage.utils_bba import dd_bba, bba_arrays_to_dense, bba_dense_to_arrays
+from storage.utils_bba import dd_bba, fill_bba
 from storage.parameters import calculate_parameters_tri_diagonal
 from flops.flops import T_flops_POBTAF, T_flops_POBTASI
 
@@ -24,23 +24,12 @@ except ImportError:
     la = np_la
 
 
-def run_pobtasi(diagonal_blocksize, arrowhead_blocksize, n_t, dtype):
-
-    out = ""
-
-    # Create matrix in compressed format
-    (
-        M_diagonal_blocks,
-        M_lower_diagonal_blocks,
-        M_arrow_bottom_blocks,
-        M_arrow_tip_block
-    ) = dd_bba(
-        1,
-        diagonal_blocksize,
-        arrowhead_blocksize,
-        n_t,
-        dtype,
-    )
+def run_pobtasi(
+    M_diagonal_blocks,
+    M_lower_diagonal_blocks,
+    M_arrow_bottom_blocks,
+    M_arrow_tip_block,
+):
 
     # Do inversion on compressed format
     # pobtaf time
@@ -58,7 +47,7 @@ def run_pobtasi(diagonal_blocksize, arrowhead_blocksize, n_t, dtype):
         False,
     )
     end_time = time.time()
-    out += f"{end_time - start_time},"
+    time_c = end_time - start_time
 
     # pobtasi time
     start_time = time.time()
@@ -75,9 +64,9 @@ def run_pobtasi(diagonal_blocksize, arrowhead_blocksize, n_t, dtype):
         False,
     )
     end_time = time.time()
-    out += f"{end_time - start_time}"
+    time_in = end_time - start_time
 
-    return out
+    return time_c, time_in
 
 
 def main():
@@ -89,6 +78,8 @@ def main():
                         help="Bandwidth.")
     parser.add_argument('--arrowhead_blocksize', type=int, required=True,
                         help="Arrowhead block width.")
+    parser.add_argument('--n_runs', type=int, required=False, default=1,
+                        help="Number of runs.")
 
     # Parse arguments
     args = parser.parse_args()
@@ -103,6 +94,7 @@ def main():
 
     # print("n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,pobtaf_time,pobtasi_time,pobtaf_FLOPS,pobtasi_FLOPS")
 
+    print(args.n_runs, end=',')
     print(parameters['parameters']['matrix_size'], end=',')
     print(parameters['parameters']['bandwidth'], end=',')
     print(parameters['parameters']['arrowhead_blocksize'], end=',')
@@ -116,23 +108,52 @@ def main():
         print(parameters['parameters']['n_offdiags'], end=',')
         print(parameters['parameters']['n_t'], end=',')
 
-        out = run_pobtasi(
-            diagonal_blocksize=parameters['parameters']['diagonal_blocksize'],
-            arrowhead_blocksize=parameters['parameters']['arrowhead_blocksize'],
+        (
+            M_diagonal_blocks,
+            M_lower_diagonal_blocks,
+            M_arrow_bottom_blocks,
+            M_arrow_tip_block,
+        ) = dd_bba(
+            1,
+            parameters['parameters']['diagonal_blocksize'],
+            parameters['parameters']['arrowhead_blocksize'],
             n_t=parameters['parameters']['n_t'],
             dtype=dtype,
         )
-        print(out, end=',')
+
+        time_c = 0
+        time_in = 0
+        for _ in range(args.n_runs):
+
+            times = run_pobtasi(
+                M_diagonal_blocks,
+                M_lower_diagonal_blocks,
+                M_arrow_bottom_blocks,
+                M_arrow_tip_block,
+            )
+            time_c += times[0]
+            time_in += times[1]
+
+            fill_bba(
+                M_diagonal_blocks,
+                M_lower_diagonal_blocks,
+                M_arrow_bottom_blocks,
+                M_arrow_tip_block,
+                factor=int(np.sqrt(parameters['parameters']['n_t']))
+            )
+
+        print(time_c, end=',')
+        print(time_in, end=',')
 
         # GET FLOPS
-        flops_c, _ = T_flops_POBTAF(
+        flops_c = T_flops_POBTAF(
             nt=parameters['parameters']['n_t'],
             ns=parameters['parameters']['diagonal_blocksize'],
             nb=parameters['parameters']['arrowhead_blocksize']
         )
         print(flops_c, end=',')
 
-        flops_si, _ = T_flops_POBTASI(
+        flops_si = T_flops_POBTASI(
             nt=parameters['parameters']['n_t'],
             ns=parameters['parameters']['diagonal_blocksize'],
             nb=parameters['parameters']['arrowhead_blocksize']
