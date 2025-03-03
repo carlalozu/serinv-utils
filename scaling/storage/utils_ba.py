@@ -170,8 +170,7 @@ def fill_ba(
     """Returns a random, diagonaly dominant general, banded arrowhead matrix in
     compressed format."""
 
-    arrowhead_size = A_arrow_bottom.shape[0]
-    n = A_diagonal.shape[0]
+    arrowhead_size, n = A_arrow_bottom.shape
     n_offdiags = A_lower_diagonals.shape[0]
 
     rc = (1.0 + 1.0j) if A_diagonal.dtype == np.complex128 else 1.0

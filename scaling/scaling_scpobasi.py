@@ -4,7 +4,7 @@ import argparse
 
 from serinv.algs.work_in_progress.scpobaf import scpobaf
 from serinv.algs.work_in_progress.scpobasi import scpobasi
-from storage.utils_ba import dd_ba
+from storage.utils_ba import dd_ba, fill_ba
 from storage.parameters import calculate_parameters_banded
 from flops.scpobaf_flops import scpobaf_flops
 from flops.scpobasi_flops import scpobasi_flops
@@ -26,22 +26,13 @@ except ImportError:
     la = np_la
 
 
-def run_scpobasi(n, n_offdiags, arrowhead_size, overwrite, dtype):
-    out = ""
-
-    (
-        M_diagonal,
-        M_lower_diagonals,
-        M_arrow_bottom,
-        M_arrow_tip
-    ) = dd_ba(
-        n_offdiags,
-        arrowhead_size,
-        n,
-        dtype,
-        factor=int(np.sqrt(n))
-    )
-
+def run_scpobasi(
+    M_diagonal,
+    M_lower_diagonals,
+    M_arrow_bottom,
+    M_arrow_tip,
+    overwrite=True,
+):
     # Cholesky decomposition serinv
     start_time = time.time()
     (
@@ -57,7 +48,7 @@ def run_scpobasi(n, n_offdiags, arrowhead_size, overwrite, dtype):
         overwrite
     )
     end_time = time.time()
-    out += f"{end_time - start_time},"
+    time_c = end_time - start_time
 
     # Inversion serinv
     start_time = time.time()
@@ -74,9 +65,9 @@ def run_scpobasi(n, n_offdiags, arrowhead_size, overwrite, dtype):
         overwrite
     )
     end_time = time.time()
-    out += f"{end_time - start_time}"
+    time_in = end_time - start_time
 
-    return out
+    return time_c, time_in
 
 
 def main():
@@ -90,6 +81,8 @@ def main():
                         required=True, help="Arrowhead width.")
     parser.add_argument('--overwrite', type=int, required=False, default=1,
                         help="Overwrite the original arrays.")
+    parser.add_argument('--n_runs', type=int, required=False, default=1,
+                        help="Number of runs.")
 
     # Parse arguments
     args = parser.parse_args()
@@ -104,6 +97,7 @@ def main():
 
     # print("n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,scpobaf_time,scpobasi_time,scpobaf_FLOPS,scpobasi_FLOPS")
 
+    print(args.n_runs, end=',')
     print(parameters['parameters']['matrix_size'], end=',')
     print(parameters['parameters']['bandwidth'], end=',')
     print(parameters['parameters']['arrowhead_blocksize'], end=',')
@@ -117,14 +111,46 @@ def main():
         print(parameters['parameters']['n_offdiags'], end=',')
         print(parameters['parameters']['n_t'], end=',')
 
-        out = run_scpobasi(
-            n=parameters['parameters']['matrix_size'],
+        n = parameters['parameters']['matrix_size']
+
+        (
+            M_diagonal,
+            M_lower_diagonals,
+            M_arrow_bottom,
+            M_arrow_tip
+        ) = dd_ba(
             n_offdiags=parameters['parameters']['n_offdiags'],
             arrowhead_size=parameters['parameters']['arrowhead_blocksize'],
-            overwrite=overwrite,
+            n=n,
             dtype=dtype,
+            factor=int(xp.sqrt(n))
         )
-        print(out, end=',')
+
+
+        time_c = 0
+        time_in = 0
+        for _ in range(args.n_runs):
+
+            times = run_scpobasi(
+                M_diagonal,
+                M_lower_diagonals,
+                M_arrow_bottom,
+                M_arrow_tip,
+                overwrite=overwrite,
+            )
+            time_c += times[0]
+            time_in += times[1]
+
+            fill_ba(
+                M_diagonal,
+                M_lower_diagonals,
+                M_arrow_bottom,
+                M_arrow_tip,
+                factor=int(xp.sqrt(n))
+            )
+
+        print(time_c, end=',')
+        print(time_in, end=',')
 
         # GET FLOPS
         flops_c, _ = scpobaf_flops(
@@ -140,6 +166,7 @@ def main():
             arrowhead_blocksize=parameters['parameters']['arrowhead_blocksize'],
         )
         print(flops_si)
+
 
 
 if __name__ == "__main__":

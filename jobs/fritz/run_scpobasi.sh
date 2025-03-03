@@ -20,7 +20,7 @@ output_file="scpobasi_$arrowhead_blocksize.txt"
 > results/$output_file
 
 
-echo "run,id,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,scpobaf_time,scpobasi_time,scpobaf_FLOPS,scpobasi_FLOPS"  | tee -a results/$output_file
+echo "id,n_runs,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,scpobaf_time,scpobasi_time,scpobaf_FLOPS,scpobasi_FLOPS"  | tee -a results/$output_file
 
 i=16
 inside_n=$((2**i))
@@ -34,10 +34,8 @@ for ((j=i-7; j<i-2; j++)) do
     n_runs=4
     
     echo "Running $script with matrix size $n, bandwidth $bandwidth, j $j, diagonal_blocksize $diagonal_blocksize"
-    for ((r=0; r<n_runs; r++)) do
-        echo -n "$r,$j," | tee -a results/$output_file
-        python ../../scaling/scaling_scpobasi.py --n=$n --bandwidth=$bandwidth --arrowhead_blocksize=$arrowhead_blocksize --overwrite=$overwrite|  tee -a results/$output_file
-    done
+    echo -n "$j," | tee -a results/$output_file
+    python ../../scaling/scaling_scpobasi.py --n=$n --bandwidth=$bandwidth --arrowhead_blocksize=$arrowhead_blocksize --overwrite=$overwrite --n_runs=$n_runs|  tee -a results/$output_file
 
 done
 
