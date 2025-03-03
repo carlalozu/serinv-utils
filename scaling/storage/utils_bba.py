@@ -29,13 +29,14 @@ try:
 except ImportError:
     CUPY_AVAIL = False
 
+xp = cp if CUPY_AVAIL else np
 
 def spd(M_, factor_=2):
     """Makes dense matrix symmetric positive definite."""
 
     # Make diagonally dominant
     for i in range(M_.shape[0]):
-        M_[i, i] = (1 + np.sum(M_[i, :]))*factor_
+        M_[i, i] = (1 + xp.sum(M_[i, :]))*factor_
 
     # Symmetrize
     M_ = (M_ + M_.conj().T) / 2
@@ -51,8 +52,6 @@ def dd_bba(
 ):
     """Returns a random, diagonally dominant general, block banded arrowhead
     matrix in compressed format."""
-
-    xp = cp if CUPY_AVAIL else np
 
     rc = (1.0 + 1.0j) if dtype == np.complex128 else 1.0
 
@@ -88,7 +87,7 @@ def dd_bba(
     # Make main diagonal symmetric
     for i in range(n_t):
         A_diagonal_blocks[i, :, :] = spd(
-            A_diagonal_blocks[i, :, :], factor_=int(np.sqrt(n_t)))
+            A_diagonal_blocks[i, :, :], factor_=int(xp.sqrt(n_t)))
 
     A_arrow_tip_block[:, :] = spd(
         A_arrow_tip_block[:, :], factor_=int(xp.sqrt(n_t)))
@@ -113,8 +112,6 @@ def bba_dense_to_arrays(
     1. Block banded diagonal structure
     2. Arrowhead pattern in the last few rows and columns
     """
-
-    xp = cp if CUPY_AVAIL else np
 
     n_t = (M.shape[0] - arrow_blocksize)//diag_blocksize
 
@@ -179,7 +176,6 @@ def bba_arrays_to_dense(
     """Decompress a square matrix with banded and arrowhead structure into
     dense format.
     """
-    xp = cp if CUPY_AVAIL else np
 
     n_t, diag_blocksize, _ = M_diagonal_blocks.shape
     arrow_blocksize = M_arrow_tip_block.shape[0]
@@ -224,7 +220,6 @@ def fill_bba(
     A_arrow_tip_block,
     factor=2
 ):
-    xp = cp if CUPY_AVAIL else np
 
     rc = (1.0 + 1.0j) if A_diagonal_blocks.dtype == np.complex128 else 1.0
 

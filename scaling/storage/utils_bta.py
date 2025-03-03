@@ -10,6 +10,8 @@ try:
 except ImportError:
     CUPY_AVAIL = False
 
+xp = cp if CUPY_AVAIL else np
+
 def dd_bta(
     diagonal_blocksize: int,
     arrowhead_blocksize: int,
@@ -17,7 +19,6 @@ def dd_bta(
     dtype: np.dtype,
 ):
     """Returns a random, diagonaly dominant general, block tridiagonal arrowhead matrix."""
-    xp = cp if CUPY_AVAIL else np
 
     DD_BTA = xp.zeros(
         (
@@ -79,7 +80,6 @@ def fill_bta(
     dtype: np.dtype,
 ):
     """Returns a random, diagonaly dominant general, block tridiagonal arrowhead matrix."""
-    xp = cp if CUPY_AVAIL else np
 
     DD_BTA = xp.zeros(
         (

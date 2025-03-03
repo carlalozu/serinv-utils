@@ -41,7 +41,7 @@ def run_operations(diag_blocksize, arrowhead_blocksize, n_runs, dtype):
         *(diag_blocksize, diag_blocksize),
     )
     # Make matrix positive def
-    spd(block_ns_ns, int(np.sqrt(diag_blocksize)))
+    spd(block_ns_ns, int(xp.sqrt(diag_blocksize)))
     block_ns_ns_out = xp.zeros(
         (diag_blocksize, diag_blocksize),
         dtype=dtype
@@ -78,7 +78,7 @@ def run_operations(diag_blocksize, arrowhead_blocksize, n_runs, dtype):
     vector_nb_out = xp.zeros(arrowhead_blocksize,
                              dtype=dtype)
 
-    element = np.random.rand(1)
+    element = xp.random.rand(1)
     element_out = xp.zeros(1, dtype=dtype)
     print(f"{diag_blocksize},{arrowhead_blocksize}", end=',')
 

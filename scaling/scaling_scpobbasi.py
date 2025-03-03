@@ -150,7 +150,7 @@ def main():
                 M_lower_diagonal_blocks,
                 M_arrow_bottom_blocks,
                 M_arrow_tip_block,
-                factor=int(np.sqrt(parameters['parameters']['n_t']))
+                factor=int(xp.sqrt(parameters['parameters']['n_t']))
             )
 
         print(time_c, end=',')
