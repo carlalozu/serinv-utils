@@ -13,22 +13,26 @@ def main(filename, imgname, alg, type, cluster):
 
     plt.figure(figsize=(8, 6))
     for i in sorted(data_['id'].unique())[::-1]:
-        data = data_[data_['id']==i]
+        data = data_[data_['id'] == i]
 
         bandwidth = int(list(data['bandwidth'])[0])
         arrowhead = int(list(data['arrowhead_blocksize'])[0])
         matrix_size = int(list(data['n'])[0])
 
-        grouped_data = data.groupby('diagonal_blocksize').median()
+        grouped_data = data.groupby('diagonal_blocksize').sum()
+        grouped_data['time'] = grouped_data[f'scpobba{alg}_time'] / \
+            grouped_data['n_runs']
+        
+        grouped_data[f'scpobba{alg}_FLOPS'] = data.groupby('diagonal_blocksize').mean()[f'scpobba{alg}_FLOPS']
 
-
+        print(grouped_data['n_runs'])
         label = f'$b$: {int(bandwidth)}'
         # label = f'Bandwidth: {int(bandwidth)}'
         # Plot mean times with error bars
-        if type=='runtime':
+        if type == 'runtime':
             plt.plot(
-                grouped_data.index, 
-                grouped_data[f'scpobba{alg}_time'], 
+                grouped_data.index,
+                grouped_data['time'],
                 # yerr=data.groupby('diagonal_blocksize')['time'].std(),
                 label=label,
                 marker='o',
@@ -37,14 +41,13 @@ def main(filename, imgname, alg, type, cluster):
             ylabel = 'Runtime (secs)'
         else:
             plt.plot(
-                grouped_data.index, 
-                grouped_data[f'scpobba{alg}_FLOPS']/grouped_data[f'scpobba{alg}_time']*1e-9, 
+                grouped_data.index,
+                grouped_data[f'scpobba{alg}_FLOPS']/grouped_data['time']*1e-9,
                 label=label,
                 marker='o',
                 linestyle='-',
             )
             ylabel = 'Performance (GFLOPS/sec)'
-
 
     # Plot customization
     plt.xscale('log', base=2)
@@ -52,13 +55,13 @@ def main(filename, imgname, alg, type, cluster):
     plt.xticks(nss, [str(tick) for tick in nss])
     plt.xlim(nss[1], nss[-1])
 
-    if type=='performance':
+    if type == 'performance':
         plt.hlines(
-            PEAK_PERFORMANCE[cluster], # peak node performance
+            PEAK_PERFORMANCE[cluster],  # peak node performance
             xmin=nss[0], xmax=nss[-1],
             color='red', alpha=0.5,
             label="peak",
-            linestyle = '-',
+            linestyle='-',
         )
 
     plt.yscale('log', base=10)
@@ -72,10 +75,11 @@ def main(filename, imgname, alg, type, cluster):
     plt.tight_layout()
     plt.savefig(imgname, dpi=300)
 
+
 if __name__ == "__main__":
 
     arrow = 64
-    for cluster in ['fritz', 'alex']:
+    for cluster in ['alex']:# ', 'alex']:
         for alg in ['f', 'si']:
             # f=cholesky, si=selected inversion
 
