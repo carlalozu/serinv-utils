@@ -1,6 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from const import PEAK_PERFORMANCE, PLT_PARAMS
+from const import PEAK_PERFORMANCE, PLT_PARAMS, FIG_SIZE
 
 plt.style.use("seaborn-v0_8-colorblind")
 plt.rcParams.update(PLT_PARAMS)
@@ -10,7 +10,7 @@ def main(filename, filename_ref, imgname, alg='f', cluster='fritz'):
     data_ = pd.read_csv(filename)
     data_ref_ = pd.read_csv(filename_ref)
 
-    fig, ax1 = plt.subplots(figsize=(8, 6))
+    fig, ax1 = plt.subplots(figsize=FIG_SIZE)
 
     arrowhead = list(data_['arrowhead_blocksize'])[0]
 

@@ -1,6 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from const import PLT_PARAMS
+from const import PLT_PARAMS, FIG_SIZE
 
 plt.style.use("seaborn-v0_8-colorblind")
 plt.rcParams.update(PLT_PARAMS)
@@ -15,7 +15,7 @@ def main(filename, filename_ref, imgname, cluster, alg):
     data_scpobbaf = pd.read_csv(filename)
     data_pobtaf = pd.read_csv(filename_ref)
 
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=FIG_SIZE)
     for i in sorted(data_scpobbaf['id'].unique())[::-1]:
         data = data_scpobbaf[data_scpobbaf['id'] == i]
         data_pobtaf_ = data_pobtaf[data_pobtaf['id'] == i].sum()

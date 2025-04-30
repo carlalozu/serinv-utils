@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "serinv_utils"
+version = "0.1"
+authors = [
+    { name = "Carla Lopez", email = "calopez@ethz.ch" },
+]
+description = "Utils for SerinV."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "BSD-3-Clause"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent"
+]
+dependencies = [
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "pydantic",
+    "pandas",
+]
+
+[project.urls]
+repository = "https://github.com/carlalozu/serinv-utils"
+
+[tool.isort]
+profile = "black"

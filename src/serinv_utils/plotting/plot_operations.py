@@ -2,10 +2,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
-from const import PEAK_PERFORMANCE, PLT_PARAMS
+from const import PEAK_PERFORMANCE, PLT_PARAMS, FIG_SIZE
 from serinv_utils.scaling.flops.const import OPERATIONS_FLOPS
+from serinv_utils.config import PATH
 
-# plt.style.use("seaborn-v0_8-colorblind")
+plt.style.use("seaborn-v0_8-colorblind")
 plt.rcParams.update(PLT_PARAMS)
 
 operations_list = {
@@ -34,13 +35,22 @@ operations_list = {
     ],
 }
 
-lims = {
+lims_x = {
     'block_chol_alex': (16, 4096),
     'block_inv_alex': (16, 4096),
-    'block_chol_fritz': (16, 2048),
-    'block_inv_fritz': (16, 2048),
+    'block_chol_fritz': (16, 4096),
+    'block_inv_fritz': (16, 4096),
     'banded_alex': (64, 2048),
     'banded_fritz': (64, 2048),
+}
+
+lims_y = {
+    'block_chol_alex': (10e-6, 10e-3),
+    'block_inv_alex': None,
+    'block_chol_fritz': (10e-7, 10e-1),
+    'block_inv_fritz': None,
+    'banded_alex': None,
+    'banded_fritz': None,
 }
 
 
@@ -49,7 +59,7 @@ def main(filename, imgname, type_, routine, cluster):
 
     data_g = data.groupby('diag_blocksize').sum()
 
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=FIG_SIZE)
 
     if type_ == 'runtime':
         for alg_ in operations_list[routine]:
@@ -90,7 +100,8 @@ def main(filename, imgname, type_, routine, cluster):
     if 'block' in routine:
         plt.xscale('log', base=2)
     plt.xticks(data_g.index, [str(int(tick)) for tick in data_g.index])
-    plt.xlim(*lims[f'{routine}_{cluster}'])
+    plt.xlim(lims_x[f'{routine}_{cluster}'])
+    plt.ylim(lims_y[f'{routine}_{cluster}'])
     plt.xlabel('$n_s$')
 
     plt.yscale('log', base=10)
@@ -105,6 +116,6 @@ if __name__ == "__main__":
     for cluster in ['alex', 'fritz']:
         for type_ in ['runtime', 'performance']:
             for routine in operations_list:
-                filename = f"../jobs/{cluster}/results/operations.txt"
-                imgname = f"../jobs/{cluster}/images/operations_{routine}_{type_}.pdf"
+                filename = f"{PATH}/jobs/{cluster}/results/operations.txt"
+                imgname = f"{PATH}/jobs/{cluster}/images/operations_{routine}_{type_}.pdf"
                 main(filename, imgname, type_, routine, cluster)

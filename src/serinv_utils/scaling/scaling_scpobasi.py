@@ -4,10 +4,10 @@ import argparse
 
 from serinv.algs.work_in_progress.scpobaf import scpobaf
 from serinv.algs.work_in_progress.scpobasi import scpobasi
-from storage.utils_ba import dd_ba, fill_ba
-from storage.parameters import calculate_parameters_banded
-from flops.scpobaf_flops import scpobaf_flops
-from flops.scpobasi_flops import scpobasi_flops
+from serinv_utils.storage.utils_ba import dd_ba, fill_ba
+from serinv_utils.storage.parameters import calculate_parameters_banded
+from serinv_utils.flops.scpobaf_flops import scpobaf_flops
+from serinv_utils.flops.scpobasi_flops import scpobasi_flops
 
 try:
     import cupy as cp

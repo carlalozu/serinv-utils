@@ -1,4 +1,5 @@
 import pandas as pd
+from serinv_utils.config import PATH
 
 
 def main(filename, filename_ref, output_filename, tile, alg):
@@ -37,10 +38,10 @@ if __name__ == "__main__":
 
                 arrow = 64
 
-                filename = f'../jobs/{cluster}/results/scpo{tile}asi_{arrow}.txt'
+                filename = f'{PATH}/jobs/{cluster}/results/scpo{tile}asi_{arrow}.txt'
                 if tile == 'bb':
-                    filename = f'../jobs/{cluster}/results/scpo{tile}asi_blocks_{arrow}.txt'
-                filename_ref = f'../jobs/{cluster}/results/pobtasi_{arrow}.txt'
-                output_filename = f'../jobs/{cluster}/results/scpo{tile}a{alg}_{arrow}_df.txt'
+                    filename = f'{PATH}/jobs/{cluster}/results/scpo{tile}asi_blocks_{arrow}.txt'
+                filename_ref = f'{PATH}/jobs/{cluster}/results/pobtasi_{arrow}.txt'
+                output_filename = f'{PATH}/jobs/{cluster}/results/scpo{tile}a{alg}_{arrow}_df.txt'
 
                 main(filename, filename_ref, output_filename, tile, alg)

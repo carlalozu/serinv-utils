@@ -3,9 +3,10 @@ from serinv_utils.scaling.flops.scpobbaf_flops import scpobbaf_flops
 from serinv_utils.scaling.flops.scpobbasi_flops import scpobbasi_flops
 
 from serinv_utils.scaling.storage.parameters import calculate_parameters_n_diagonal
-from const import PLT_PARAMS
+from const import PLT_PARAMS, FIG_SIZE
 import pandas as pd
 import matplotlib.pyplot as plt
+from serinv_utils.config import PATH
 
 
 plt.style.use("seaborn-v0_8-colorblind")
@@ -29,9 +30,9 @@ def main(filename, filename_alg, imgname, routine, cluster):
 
     operations_df = data_ops.groupby('diag_blocksize').sum().reset_index()
 
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=FIG_SIZE)
 
-    for b in sorted(data_rou['bandwidth'].unique())[::-1]:
+    for b in sorted([513, 2049,8193])[::-1]:
         data_rou_ = data_rou[data_rou['bandwidth'] == b]
 
         times = []
@@ -129,7 +130,7 @@ if __name__ == "__main__":
     for cluster in ['fritz', 'alex']:  # , 'fritz', alex
         # ['POBAF', 'POBASI', 'POBBAF', 'POBBASI',]:
         for routine in ['POBBASI']:
-            filename = f"../jobs/{cluster}/results/operations.txt"
-            filename_rou = f"../jobs/{cluster}/results/sc{routine.lower()}_64_df.txt"
-            imgname = f"../jobs/{cluster}/images/operations_{routine}_theory.pdf"
+            filename = f"{PATH}/jobs/{cluster}/results/operations.txt"
+            filename_rou = f"{PATH}/jobs/{cluster}/results/sc{routine.lower()}_64_df.txt"
+            imgname = f"{PATH}/jobs/{cluster}/images/operations_{routine}_theory.pdf"
             main(filename, filename_rou, imgname, routine, cluster)

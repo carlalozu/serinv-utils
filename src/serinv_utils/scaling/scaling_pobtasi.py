@@ -5,9 +5,9 @@ import numpy as np
 import scipy.linalg as np_la
 
 from serinv.algs import pobtaf, pobtasi
-from storage.utils_bba import dd_bba, fill_bba
-from storage.parameters import calculate_parameters_tri_diagonal
-from flops.flops import T_flops_POBTAF, T_flops_POBTASI
+from serinv_utils.storage.utils_bba import dd_bba, fill_bba
+from serinv_utils.storage.parameters import calculate_parameters_tri_diagonal
+from serinv_utils.flops.flops import T_flops_POBTAF, T_flops_POBTASI
 
 try:
     import cupy as cp

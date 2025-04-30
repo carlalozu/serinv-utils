@@ -3,10 +3,10 @@ import time
 
 from serinv.algs.work_in_progress.scpobbaf import scpobbaf_c
 from serinv.algs.work_in_progress.scpobbasi import scpobbasi_c
-from storage.utils_bba import dd_bba, fill_bba
-from storage.parameters import calculate_parameters_n_diagonal
-from flops.scpobbaf_flops import scpobbaf_flops
-from flops.scpobbasi_flops import scpobbasi_flops
+from serinv_utils.storage.utils_bba import dd_bba, fill_bba
+from serinv_utils.storage.parameters import calculate_parameters_n_diagonal
+from serinv_utils.flops.scpobbaf_flops import scpobbaf_flops
+from serinv_utils.flops.scpobbasi_flops import scpobbasi_flops
 
 import argparse
 

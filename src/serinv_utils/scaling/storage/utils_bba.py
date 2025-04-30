@@ -96,6 +96,10 @@ def dd_bba(
     for i in range(1, n_offdiags_blk):
         A_lower_diagonal_blocks[n_t-1-i:, i*diag_blocksize:, :] = 0.0
 
+    for i in range(n_t-1):
+        A_lower_diagonal_blocks[i, -diag_blocksize:, :] = xp.triu(
+            A_lower_diagonal_blocks[i, -diag_blocksize:, :])
+
     return (A_diagonal_blocks,
             A_lower_diagonal_blocks,
             A_arrow_bottom_blocks,

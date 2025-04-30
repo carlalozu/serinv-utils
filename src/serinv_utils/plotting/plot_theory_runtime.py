@@ -1,11 +1,11 @@
 from serinv_utils.scaling.flops.const import OPERATIONS_FLOPS, ALG_OPERATION_COUNT, BENCHMARKED_OPS
 from serinv_utils.scaling.storage.parameters import calculate_parameters_tri_diagonal
-from const import PLT_PARAMS
+from const import PLT_PARAMS, FIG_SIZE
 import pandas as pd
 import matplotlib.pyplot as plt
 
 
-# plt.style.use("seaborn-v0_8-colorblind")
+plt.style.use("seaborn-v0_8-colorblind")
 plt.rcParams.update(PLT_PARAMS)
 
 
@@ -25,7 +25,7 @@ def main(filename, imgname, routine, cluster):
 
     operations_df = data.groupby('diag_blocksize').sum().reset_index()
 
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=FIG_SIZE)
 
     routine_time = pd.DataFrame(0, index=operations_df.index, columns=['time'])
     for alg_ in ALG_OPERATION_COUNT[routine]:

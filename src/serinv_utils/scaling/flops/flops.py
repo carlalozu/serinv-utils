@@ -1,4 +1,4 @@
-# from const import OPERATIONS_FLOPS, ALG_OPERATION_COUNT
+from serinv_utils.scaling.flops.const import OPERATIONS_FLOPS, ALG_OPERATION_COUNT
 
 
 def T_flops_POBAF(nt: int, ns: int, nb: int):
