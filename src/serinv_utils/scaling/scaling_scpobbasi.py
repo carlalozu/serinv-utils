@@ -102,7 +102,7 @@ def main():
         n_offdiags_=args.n_offdiags_blk,
     )
 
-    # print("n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time,numpy_time,error")
+    # print("n_runs,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time_c_mean,time_c_std,time_si_mean,time_si_std")
 
     print(args.n_runs, end=',')
     print(parameters['parameters']['matrix_size'], end=',')
@@ -110,7 +110,7 @@ def main():
     print(parameters['parameters']['arrowhead_blocksize'], end=',')
 
     if not parameters['flag']:
-        print('NA,NA,NA,NA,NA,NA,NA')
+        print('NA,NA,NA,NA,NA,NA,NA,NA')
 
     else:
         print(parameters['parameters']['effective_bandwidth'], end=',')
@@ -131,8 +131,29 @@ def main():
             dtype=dtype,
         )
 
-        time_c = 0
-        time_in = 0
+        # Warm up runs, 5
+        warmup_runs = 5
+        if args.n_runs < warmup_runs:
+            warmup_runs = 1
+        for _ in range(warmup_runs):
+            times = run_scpobbasi(
+                M_diagonal_blocks,
+                M_lower_diagonal_blocks,
+                M_arrow_bottom_blocks,
+                M_arrow_tip_block,
+                overwrite
+            )
+            fill_bba(
+                M_diagonal_blocks,
+                M_lower_diagonal_blocks,
+                M_arrow_bottom_blocks,
+                M_arrow_tip_block,
+                factor=int(xp.sqrt(parameters['parameters']['n_t']))
+            )
+
+        # Actual runs
+        time_c = []
+        time_in = []
         for _ in range(args.n_runs):
 
             times = run_scpobbasi(
@@ -142,8 +163,8 @@ def main():
                 M_arrow_tip_block,
                 overwrite
             )
-            time_c += times[0]
-            time_in += times[1]
+            time_c.append(times[0])
+            time_in.append(times[1])
 
             fill_bba(
                 M_diagonal_blocks,
@@ -153,9 +174,14 @@ def main():
                 factor=int(xp.sqrt(parameters['parameters']['n_t']))
             )
 
-        print(time_c, end=',')
-        print(time_in, end=',')
+        ## Print results
+        print(np.median(time_c), end=',')
+        print(np.std(time_c), end=',')
 
+        print(np.median(time_in), end=',')
+        print(np.std(time_in), end=',')
+
+        # Flops calculations
         flops_c, _ = scpobbaf_flops(
             n_diag_blocks=parameters['parameters']['n_t'],
             diagonal_blocksize=parameters['parameters']['diagonal_blocksize'],
