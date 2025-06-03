@@ -16,9 +16,9 @@ module load gcc openmpi python
 conda activate serinv_cpu
 
 # Parameters
-file_PATH=../../scaling
+script_path=../../scaling
 script=scaling_scpobbasi.py
-output_file=scpobbasi_blocks_64.csv
+output_file=scpobbasi_blocks_64_16.csv
 
 
 # Create output files
@@ -27,7 +27,7 @@ output_file=scpobbasi_blocks_64.csv
 
 echo "n_runs,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time_c_mean,time_c_std,time_si_mean,time_si_std,flops_c,flops_si" | tee -a results/$output_file
 
-i=13
+i=16
 inside_n=$((2**i))
 
 for ((j=i-7; j<i-3; j+=2)) do
@@ -46,7 +46,7 @@ for ((j=i-7; j<i-3; j+=2)) do
 
         echo "Running $script with matrix size $n, bandwidth $bandwidth, n_offdiags_blk $n_offdiags_blk, n_runs $n_runs"
 
-        python $file_PATH/$script --n=$n --bandwidth=$bandwidth --arrowhead_blocksize=$arrowhead_blocksize --n_offdiags_blk=$n_offdiags_blk --n_runs=$n_runs --overwrite=$overwrite| tee -a results/$output_file
+        python $script_path/$script --n=$n --bandwidth=$bandwidth --arrowhead_blocksize=$arrowhead_blocksize --n_offdiags_blk=$n_offdiags_blk --n_runs=$n_runs --overwrite=$overwrite| tee -a results/$output_file
 
     done
 

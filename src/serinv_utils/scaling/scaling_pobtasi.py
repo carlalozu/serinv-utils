@@ -92,7 +92,6 @@ def main():
     # Set values
     dtype = np.float64
 
-    # print("n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,pobtaf_time,pobtasi_time,pobtaf_FLOPS,pobtasi_FLOPS")
 
     print(args.n_runs, end=',')
     print(parameters['parameters']['matrix_size'], end=',')
@@ -121,8 +120,28 @@ def main():
             dtype=dtype,
         )
 
-        time_c = 0
-        time_in = 0
+
+        # Warm up runs, 5
+        warmup_runs = 5
+        if args.n_runs < warmup_runs:
+            warmup_runs = 1
+        for _ in range(warmup_runs):
+            times = run_pobtasi(
+                M_diagonal_blocks,
+                M_lower_diagonal_blocks,
+                M_arrow_bottom_blocks,
+                M_arrow_tip_block,
+            )
+            fill_bba(
+                M_diagonal_blocks,
+                M_lower_diagonal_blocks,
+                M_arrow_bottom_blocks,
+                M_arrow_tip_block,
+                factor=int(xp.sqrt(parameters['parameters']['n_t']))
+            )
+
+        time_c = []
+        time_in = []
         for _ in range(args.n_runs):
 
             times = run_pobtasi(
@@ -131,8 +150,8 @@ def main():
                 M_arrow_bottom_blocks,
                 M_arrow_tip_block,
             )
-            time_c += times[0]
-            time_in += times[1]
+            time_c.append(times[0])
+            time_in.append(times[1])
 
             fill_bba(
                 M_diagonal_blocks,
@@ -142,8 +161,12 @@ def main():
                 factor=int(xp.sqrt(parameters['parameters']['n_t']))
             )
 
-        print(time_c, end=',')
-        print(time_in, end=',')
+        ## Print results
+        print(np.median(time_c), end=',')
+        print(np.std(time_c), end=',')
+
+        print(np.median(time_in), end=',')
+        print(np.std(time_in), end=',')
 
         # GET FLOPS
         flops_c = T_flops_POBTAF(

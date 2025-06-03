@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --job-name=pobtasi      # Job name   
-#SBATCH --output=pobtasi-%j.out # Output file
-#SBATCH --error=pobtasi-%j.err  # Error file 
-#SBATCH --ntasks=32               # Number of tasks
+#SBATCH --job-name=pobtasi     # Job name   
+#SBATCH --output=output/pobtasi-%j.out # Output file
+#SBATCH --error=output/pobtasi-%j.err  # Error file 
+#SBATCH --ntasks=72               # Number of tasks
 #SBATCH --cpus-per-task=1         # Number of CPUs per task
 #SBATCH --mem-per-cpu=1024        # Memory per CPU
 #SBATCH --time=03:00:00           # Wall clock time limit
@@ -14,23 +14,23 @@
 # conda activate serinv_cpu
 
 # Create output file
-> results/pobtasi_128.txt
+script_path=../../scaling
+output_file=pobtasi_64_16.csv
+> results/$output_file
 
-echo "run,id,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time,numpy_time,error" | tee -a results/pobtasi_128.txt
+echo "n_runs,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time_c_mean,time_c_std,time_si_mean,time_si_std,flops_c,flops_si" | tee -a results/$output_file
 
-for ((j=9; j<13; j++)) do
+i=16
+for ((j=i-7; j<i-3; j+=2)) do
 
-    i=16
     inside_n=$((2**i))
     bandwidth=$((2**j+1)) # must be odd
-    arrowhead_blocksize=$((128))
+    arrowhead_blocksize=$((64))
     n=$((inside_n+arrowhead_blocksize)) # total matrix size
 
-    n_runs=6
+    n_runs=10
     
-    echo "Running pobtaf with matrix size $n, bandwidth $bandwidth, j $j, arrowhead_blocksize $arrowhead_blocksize"
-    for ((r=0; r<n_runs; r++)) do
-        echo -n "$r,$j," | tee -a results/pobtasi_128.txt
-        python ../dev/scaling_pobtasi.py --n=$n --bandwidth=$bandwidth --arrowhead_blocksize=$arrowhead_blocksize |  tee -a results/pobtasi_128.txt
-    done
+    echo "Running pobtaf with matrix size $n, bandwidth $bandwidth, arrowhead_blocksize $arrowhead_blocksize, n_runs $n_runs"
+    python $script_path/scaling_pobtasi.py --n=$n --bandwidth=$bandwidth --arrowhead_blocksize=$arrowhead_blocksize --n_runs=$n_runs |  tee -a results/$output_file
+
 done
