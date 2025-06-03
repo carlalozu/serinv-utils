@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 from const import PEAK_PERFORMANCE, PLT_PARAMS, FIG_SIZE
-from serinv_utils.scaling.flops.const import OPERATIONS_FLOPS
-from serinv_utils.config import PATH
+from serinv_utils.flops.const import OPERATIONS_FLOPS
+PATH = ".."
 
 plt.style.use("seaborn-v0_8-colorblind")
 plt.rcParams.update(PLT_PARAMS)
@@ -36,27 +36,35 @@ operations_list = {
 }
 
 lims_x = {
-    'block_chol_alex': (16, 4096),
-    'block_inv_alex': (16, 4096),
-    'block_chol_fritz': (16, 4096),
-    'block_inv_fritz': (16, 4096),
-    'banded_alex': (64, 2048),
-    'banded_fritz': (64, 2048),
+    "alex": {
+        'block_chol': (16, 4096),
+        'block_inv': (16, 4096),
+        'banded': (64, 2048),
+    },
+    "fritz": {
+        'block_chol': (16, 4096),
+        'block_inv': (16, 4096),
+        'banded': (64, 2048),
+    }
 }
 
 lims_y = {
-    'block_chol_alex': (10e-6, 10e-3),
-    'block_inv_alex': None,
-    'block_chol_fritz': (10e-7, 10e-1),
-    'block_inv_fritz': None,
-    'banded_alex': None,
-    'banded_fritz': None,
+    'alex' : {
+        'block_chol': (10e-6, 10e-3),
+        'block_inv': {"auto":True},
+        'banded': {"auto":True},
+    },
+    'fritz': {
+        'block_chol': {"bottom":10e-7, "top":10e-1},
+        'block_inv': {"auto":True},
+        'banded': {"auto":True},
+    }
 }
 
 
 def main(filename, imgname, type_, routine, cluster):
+    
     data = pd.read_csv(filename)
-
     data_g = data.groupby('diag_blocksize').sum()
 
     plt.figure(figsize=FIG_SIZE)
@@ -65,7 +73,7 @@ def main(filename, imgname, type_, routine, cluster):
         for alg_ in operations_list[routine]:
             plt.plot(
                 data_g.index,
-                data_g[alg_]/data_g['repetitions'],
+                data_g[alg_]/data_g['n_runs'],
                 label=OPERATIONS_FLOPS[alg_]['name'],
                 marker='o',
                 linestyle='-',
@@ -78,7 +86,7 @@ def main(filename, imgname, type_, routine, cluster):
                              for ns in data_g.index])
             plt.plot(
                 data_g.index,
-                flops*(1e-9)/np.array(data_g[alg_]/data_g['repetitions']),
+                flops*(1e-9)/np.array(data_g[alg_]/data_g['n_runs']),
                 label=OPERATIONS_FLOPS[alg_]['name'],
                 marker='o',
                 linestyle='-',
@@ -100,8 +108,8 @@ def main(filename, imgname, type_, routine, cluster):
     if 'block' in routine:
         plt.xscale('log', base=2)
     plt.xticks(data_g.index, [str(int(tick)) for tick in data_g.index])
-    plt.xlim(lims_x[f'{routine}_{cluster}'])
-    plt.ylim(lims_y[f'{routine}_{cluster}'])
+    plt.xlim(lims_x[cluster][routine])
+    plt.ylim(**lims_y[cluster][routine])
     plt.xlabel('$n_s$')
 
     plt.yscale('log', base=10)
@@ -116,6 +124,6 @@ if __name__ == "__main__":
     for cluster in ['alex', 'fritz']:
         for type_ in ['runtime', 'performance']:
             for routine in operations_list:
-                filename = f"{PATH}/jobs/{cluster}/results/operations.txt"
+                filename = f"{PATH}/jobs/{cluster}/results/operations.csv"
                 imgname = f"{PATH}/jobs/{cluster}/images/operations_{routine}_{type_}.pdf"
                 main(filename, imgname, type_, routine, cluster)

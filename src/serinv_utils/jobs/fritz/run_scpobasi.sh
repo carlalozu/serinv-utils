@@ -19,7 +19,7 @@ script_path=../../scaling
 output_file=scpobasi_64.txt
 > results/$output_file
 
-echo "n_runs,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,scpobaf_time,scpobaf_std,scpobasi_time,scpobasi_std,scpobaf_FLOPS,scpobasi_FLOPS" | tee -a results/scpobasi_64.txt
+echo "n_runs,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time_f_median,time_f_std,time_si_median,time_si_std,scpobaf_FLOPS,scpobasi_FLOPS" | tee -a results/scpobasi_64.txt
 
 i=16
 for ((j=i-7; j<i-2; j+=2)) do

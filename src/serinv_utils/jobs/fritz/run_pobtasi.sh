@@ -6,22 +6,24 @@
 #SBATCH --cpus-per-task=1         # Number of CPUs per task
 #SBATCH --mem-per-cpu=1024        # Memory per CPU
 #SBATCH --time=03:00:00           # Wall clock time limit
+#SBATCH --exclusive              # Exclusive node allocation
+#SBATCH -N 1                     # One node
 
 # Load modules
-# module load gcc openmpi python
+module load gcc openmpi python
 
 # Open venv
-# conda activate serinv_cpu
+conda activate serinv_cpu
 
 # Create output file
 script_path=../../scaling
 output_file=pobtasi_64_16.csv
-> results/$output_file
 
-echo "n_runs,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time_c_mean,time_c_std,time_si_mean,time_si_std,flops_c,flops_si" | tee -a results/$output_file
+> results/$output_file
+echo "n_runs,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time_f_median,time_f_std,time_si_median,time_si_std,flops_c,flops_si" | tee -a results/$output_file
 
 i=16
-for ((j=i-7; j<i-2; j+=2)) do
+for ((j=i-3; j<i-2; j+=2)) do
 
     inside_n=$((2**i))
     bandwidth=$((2**j+1)) # must be odd

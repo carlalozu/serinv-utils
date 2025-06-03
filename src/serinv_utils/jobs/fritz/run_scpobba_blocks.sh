@@ -7,6 +7,7 @@
 #SBATCH --mem-per-cpu=1024        # Memory per CPU
 #SBATCH --time=02:00:00           # Wall clock time limit
 #SBATCH -N 1                     # One node
+#SBATCH --exclusive              # Exclusive node allocation
 
 
 # Load modules
@@ -23,14 +24,12 @@ output_file=scpobbasi_blocks_64_16.csv
 
 # Create output files
 > results/$output_file
-
-
-echo "n_runs,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time_c_mean,time_c_std,time_si_mean,time_si_std,flops_c,flops_si" | tee -a results/$output_file
+echo "n_runs,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time_f_median,time_f_std,time_si_median,time_si_std,flops_c,flops_si" | tee -a results/$output_file
 
 i=16
 inside_n=$((2**i))
 
-for ((j=i-7; j<i-2; j+=2)) do
+for ((j=i-3; j<i-2; j+=2)) do
 
     bandwidth=$((2**j+1)) # must be odd
     arrowhead_blocksize=64
