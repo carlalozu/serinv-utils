@@ -30,7 +30,7 @@ echo "n_runs,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocks
 i=16
 inside_n=$((2**i))
 
-for ((j=i-7; j<i-3; j+=2)) do
+for ((j=i-7; j<i-2; j+=2)) do
 
     bandwidth=$((2**j+1)) # must be odd
     arrowhead_blocksize=64

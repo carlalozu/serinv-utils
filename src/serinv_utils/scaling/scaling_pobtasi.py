@@ -121,8 +121,8 @@ def main():
         )
 
 
-        # Warm up runs, 5
-        warmup_runs = 5
+        # Warm up runs
+        warmup_runs = 3
         if args.n_runs < warmup_runs:
             warmup_runs = 1
         for _ in range(warmup_runs):

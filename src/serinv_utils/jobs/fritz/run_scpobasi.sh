@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 #SBATCH --job-name=scpobasi      # Job name   
 #SBATCH --output=output/scpobasi-%j.out # Output file
 #SBATCH --error=output/scpobasi-%j.err  # Error file 
@@ -14,13 +14,16 @@ module load gcc openmpi python
 conda activate serinv_cpu
 
 # create file
-> results/scpobasi_64.txt
+script_path=../../scaling
 
-echo "run,id,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time,time_c_mean,time_c_std,time_si_mean,time_si_std" | tee -a results/scpobasi_64.txt
+output_file=scpobasi_64.txt
+> results/$output_file
 
-for ((j=9; j<13; j++)) do
+echo "n_runs,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,scpobaf_time,scpobaf_std,scpobasi_time,scpobasi_std,scpobaf_FLOPS,scpobasi_FLOPS" | tee -a results/scpobasi_64.txt
 
-    i=16
+i=16
+for ((j=i-7; j<i-2; j+=2)) do
+
     inside_n=$((2**i))
     bandwidth=$((2**j+1))
     arrowhead_blocksize=$((64))
@@ -29,10 +32,7 @@ for ((j=9; j<13; j++)) do
     n_runs=4
     
     echo "Running scpobasi with matrix size $n, bandwidth $bandwidth, j $j, arrowhead_blocksize $arrowhead_blocksize"
-    for ((r=0; r<n_runs; r++)) do
-        echo -n "$r,$j," | tee -a results/scpobasi_64.txt
-        python ../scaling/scaling_scpobasi.py --n=$n --bandwidth=$bandwidth --arrowhead_blocksize=$arrowhead_blocksize |  tee -a results/scpobasi_64.txt
-    done
+    python $script_path/scaling_scpobasi.py --n=$n --bandwidth=$bandwidth --arrowhead_blocksize=$arrowhead_blocksize --n_runs=$n_runs |  tee -a results/$output_file
 
 done
 

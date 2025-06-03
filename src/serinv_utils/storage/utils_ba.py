@@ -168,7 +168,9 @@ def fill_ba(
     factor: float = 2,
 ):
     """Returns a random, diagonaly dominant general, banded arrowhead matrix in
-    compressed format."""
+    compressed format.
+    In plance, overwrites the input arrays with random values.
+    """
 
     arrowhead_size, n = A_arrow_bottom.shape
     n_offdiags = A_lower_diagonals.shape[0]

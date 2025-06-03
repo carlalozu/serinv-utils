@@ -95,7 +95,7 @@ def main():
     dtype = np.float64
     overwrite = bool(args.overwrite)
 
-    # print("n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,scpobaf_time,scpobasi_time,scpobaf_FLOPS,scpobasi_FLOPS")
+    # print("n_runs,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,scpobaf_time,scpobaf_std,scpobasi_time,scpobasi_std,scpobaf_FLOPS,scpobasi_FLOPS")
 
     print(args.n_runs, end=',')
     print(parameters['parameters']['matrix_size'], end=',')
@@ -127,8 +127,28 @@ def main():
         )
 
 
-        time_c = 0
-        time_in = 0
+        # Warm up runs
+        warmup_runs = 3
+        if args.n_runs < warmup_runs:
+            warmup_runs = 1
+        for _ in range(warmup_runs):
+            times = run_scpobasi(
+                M_diagonal,
+                M_lower_diagonals,
+                M_arrow_bottom,
+                M_arrow_tip,
+                overwrite=overwrite,
+            )
+            fill_ba(
+                M_diagonal,
+                M_lower_diagonals,
+                M_arrow_bottom,
+                M_arrow_tip,
+                factor=int(xp.sqrt(n))
+            )
+
+        time_c = []
+        time_in = []
         for _ in range(args.n_runs):
 
             times = run_scpobasi(
@@ -138,8 +158,8 @@ def main():
                 M_arrow_tip,
                 overwrite=overwrite,
             )
-            time_c += times[0]
-            time_in += times[1]
+            time_c.append(times[0])
+            time_in.append(times[1])
 
             fill_ba(
                 M_diagonal,
@@ -149,8 +169,12 @@ def main():
                 factor=int(xp.sqrt(n))
             )
 
-        print(time_c, end=',')
-        print(time_in, end=',')
+        ## Print results
+        print(np.median(time_c), end=',')
+        print(np.std(time_c), end=',')
+
+        print(np.median(time_in), end=',')
+        print(np.std(time_in), end=',')
 
         # GET FLOPS
         flops_c, _ = scpobaf_flops(

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 #SBATCH --job-name=pobtasi     # Job name   
 #SBATCH --output=output/pobtasi-%j.out # Output file
 #SBATCH --error=output/pobtasi-%j.err  # Error file 
@@ -21,7 +21,7 @@ output_file=pobtasi_64_16.csv
 echo "n_runs,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time_c_mean,time_c_std,time_si_mean,time_si_std,flops_c,flops_si" | tee -a results/$output_file
 
 i=16
-for ((j=i-7; j<i-3; j+=2)) do
+for ((j=i-7; j<i-2; j+=2)) do
 
     inside_n=$((2**i))
     bandwidth=$((2**j+1)) # must be odd

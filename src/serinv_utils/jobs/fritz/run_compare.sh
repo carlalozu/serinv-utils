@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 #SBATCH --job-name=compare        # Job name   
 #SBATCH --output=compare-%j.out   # Output file
 #SBATCH --error=compare-%j.err    # Error file 
