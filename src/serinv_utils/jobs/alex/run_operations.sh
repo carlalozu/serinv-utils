@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 #SBATCH --job-name=operations      # Job name   
 #SBATCH --output=output/operations-%j.out # Output file
 #SBATCH --error=output/operations-%j.err  # Error file 
@@ -7,12 +7,13 @@
 #SBATCH --gres=gpu:a40:1         # Number of GPUs
 #SBATCH --time=03:00:00          # Wall clock time limit
 #SBATCH -N 1                     # One node
+#SBATCH --exclusive              # Exclusive access
 
 # Load modules
 module load gcc openmpi python
 
 # Open venv
-conda activate serinv_cpu
+conda activate serinv_env
 
 output_file=operations.csv
 

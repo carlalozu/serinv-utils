@@ -1,12 +1,13 @@
-#!/bin/bash
+#!/bin/bash -l
 #SBATCH --job-name=scpobbasi_blocks      # Job name   
-#SBATCH --output=scpobbasi_blocks-%j.out # Output file
-#SBATCH --error=scpobbasi_blocks-%j.err  # Error file 
+#SBATCH --output=output/scpobbasi_blocks-%j.out # Output file
+#SBATCH --error=output/scpobbasi_blocks-%j.err  # Error file 
 #SBATCH --ntasks=1               # Number of tasks
 #SBATCH --cpus-per-task=16         # Number of CPUs per task
 #SBATCH --gres=gpu:a40:1
 #SBATCH --time=03:00:00           # Wall clock time limit
 #SBATCH -N 1                     # One node
+#SBATCH --exclusive               # Exclusive access
 
 
 
@@ -14,7 +15,7 @@
 module load gcc openmpi python
 
 # Open venv
-conda activate serinv_cpu
+conda activate serinv_env
 
 # Parameters
 script_path=../../scaling
@@ -24,12 +25,12 @@ output_file=scpobbasi_blocks_64_16.csv
 
 # Create output files
 > results/$output_file
-echo "n_runs,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time_f_median,time_f_std,time_si_median,time_si_std,flops_c,flops_si" | tee -a results/$output_file
+echo "n_runs,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time_f_median,time_f_std,time_si_median,time_si_std,flops_f,flops_si" | tee -a results/$output_file
 
 i=16
 inside_n=$((2**i))
 
-for ((j=i-3; j<i-2; j+=2)) do
+for ((j=i-5; j<i-2; j+=2)) do
 
     bandwidth=$((2**j+1)) # must be odd
     arrowhead_blocksize=64

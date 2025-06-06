@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/bash -l
 #SBATCH --job-name=pobtasi      # Job name   
-#SBATCH --output=pobtasi-%j.out # Output file
-#SBATCH --error=pobtasi-%j.err  # Error file 
+#SBATCH --output=output/pobtasi-%j.out # Output file
+#SBATCH --error=output/pobtasi-%j.err  # Error file 
 #SBATCH --ntasks=1               # Number of tasks
 #SBATCH --cpus-per-task=16       # Number of CPUs per task
 #SBATCH --gres=gpu:a40:1         # Number of GPUs
@@ -14,17 +14,17 @@
 module load gcc openmpi python
 
 # Open venv
-conda activate serinv_cpu
+conda activate serinv_env
 
 # Create output file
 script_path=../../scaling
 output_file=pobtasi_64_16.csv
 
 > results/$output_file
-echo "n_runs,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time_f_median,time_f_std,time_si_median,time_si_std,flops_c,flops_si" | tee -a results/$output_file
+echo "n_runs,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time_f_median,time_f_std,time_si_median,time_si_std,flops_f,flops_si" | tee -a results/$output_file
 
 i=16
-for ((j=i-3; j<i-2; j+=2)) do
+for ((j=i-7; j<i-2; j+=2)) do
 
     inside_n=$((2**i))
     bandwidth=$((2**j+1)) # must be odd

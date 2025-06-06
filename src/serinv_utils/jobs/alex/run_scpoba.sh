@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 #SBATCH --job-name=scpobaf      # Job name   
 #SBATCH --output=scpobaf-%j.out # Output file
 #SBATCH --error=scpobaf-%j.err  # Error file 
