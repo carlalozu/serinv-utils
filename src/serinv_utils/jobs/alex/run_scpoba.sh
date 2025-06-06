@@ -1,10 +1,10 @@
 #!/bin/bash -l
 #SBATCH --job-name=scpobaf      # Job name   
-#SBATCH --output=scpobaf-%j.out # Output file
-#SBATCH --error=scpobaf-%j.err  # Error file 
+#SBATCH --output=output/scpobaf-%j.out # Output file
+#SBATCH --error=output/scpobaf-%j.err  # Error file 
 #SBATCH --ntasks=1               # Number of tasks
 #SBATCH --cpus-per-task=16       # Number of CPUs per task
-#SBATCH --gres=gpu:a40:1         # Number of GPUs
+#SBATCH --gres=gpu:a100:1         # Number of GPUs
 #SBATCH --time=03:00:00          # Wall clock time limit
 #SBATCH -N 1                     # One node
 #SBATCH --exclusive               # Exclusive access

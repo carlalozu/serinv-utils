@@ -1,10 +1,10 @@
 #!/bin/bash -l
 #SBATCH --job-name=scpobbaf      # Job name   
-#SBATCH --output=scpobbaf-%j.out # Output file
-#SBATCH --error=scpobbaf-%j.err  # Error file 
+#SBATCH --output=output/scpobbaf-%j.out # Output file
+#SBATCH --error=output/scpobbaf-%j.err  # Error file 
 #SBATCH --ntasks=1               # Number of tasks
 #SBATCH --cpus-per-task=16       # Number of CPUs per task
-#SBATCH --gres=gpu:a40:1         # Number of GPUs
+#SBATCH --gres=gpu:a100:1         # Number of GPUs
 #SBATCH --time=03:00:00          # Wall clock time limit
 #SBATCH -N 1                     # One node
 #SBATCH --exclusive               # Exclusive access
@@ -23,7 +23,6 @@ script="scaling_scpobbaf.py"
 
 # Create output files
 > results/$output_file
-
 echo "run,id,n,bandwidth,arrowhead_blocksize,effective_bandwidth,diagonal_blocksize,n_offdiags,n_t,time,numpy_time,error,FLOPS"  | tee -a results/$output_file
 
 i=16
